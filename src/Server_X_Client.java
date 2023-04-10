@@ -57,13 +57,13 @@ public class Server_X_Client {
 
             }
         }
-
-        synchronized (SharedObject.players) {
-            SharedObject.players.get(0).card(1);
-            SharedObject.players.get(1).card(2);
-            SharedObject.players.get(2).card(3);
-        }
-
+       while (true) {
+           synchronized (SharedObject.players) {
+               SharedObject.players.get(0).card(1);
+               SharedObject.players.get(1).card(2);
+               SharedObject.players.get(2).card(3);
+           }
+       }
        // players.get(0).card(5);
        // players.get(1).card(5);
       //  players.get(2).card(5);
