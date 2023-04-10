@@ -6,6 +6,8 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 public class Server_X_Client {
@@ -25,20 +27,27 @@ public class Server_X_Client {
             System.out.println("Server error");
 
         }
-        ArrayList<ServerThread>  players =new ArrayList<>();
+       // ArrayList<ServerThread>  players =new ArrayList<>();
+        class SharedObject{
+            public static List<ServerThread> players = Collections.synchronizedList(new ArrayList<ServerThread>());
+        }
 
-        while(true){
+
+
+        while(counter <3){
             try{
+
                 s= ss2.accept();
                 System.out.println("connection Established");
                 ServerThread st=new ServerThread(s);
                 st.start();
-                players.add(st);
-                counter++;
-                if(counter ==3) {
-                    st.card(5);
+                synchronized (SharedObject.players) {
+                    SharedObject.players.add(st);
                 }
-                System.out.println(counter);
+
+
+
+                counter++;
 
             }
 
@@ -48,6 +57,16 @@ public class Server_X_Client {
 
             }
         }
+
+        synchronized (SharedObject.players) {
+            SharedObject.players.get(0).card(1);
+            SharedObject.players.get(1).card(2);
+            SharedObject.players.get(2).card(3);
+        }
+
+       // players.get(0).card(5);
+       // players.get(1).card(5);
+      //  players.get(2).card(5);
 
     }
 
@@ -64,57 +83,19 @@ class ServerThread extends Thread{
         this.s=s;
     }
 
-    public void card (int card){
+    public void card (int card)  {
 
-        try{
+       //line = "Spades"+ card ;
+        try {
             is= new BufferedReader(new InputStreamReader(s.getInputStream()));
             os=new PrintWriter(s.getOutputStream());
-
-        }catch(IOException e){
-            System.out.println("IO error in server thread");
-        }
-
-        try {
-            line=is.readLine();
-            while(line.compareTo("QUIT")!=0){
-                line = "Spades "+card;
-                os.println(line);
-                os.flush();
-                System.out.println("Response to Client  :  "+line);
-                line=is.readLine();
-            }
+            os.println("spades "+card);
+            os.flush();
         } catch (IOException e) {
-
-            line=this.getName(); //reused String line for getting thread name
-            System.out.println("IO Error/ Client "+line+" terminated abruptly");
-        }
-        catch(NullPointerException e){
-            line=this.getName(); //reused String line for getting thread name
-            System.out.println("Client "+line+" Closed");
+            throw new RuntimeException(e);
         }
 
-        finally{
-            try{
-                System.out.println("Connection Closing..");
-                if (is!=null){
-                    is.close();
-                    System.out.println(" Socket Input Stream Closed");
-                }
-
-                if(os!=null){
-                    os.close();
-                    System.out.println("Socket Out Closed");
-                }
-                if (s!=null){
-                    s.close();
-                    System.out.println("Socket Closed");
-                }
-
-            }
-            catch(IOException ie){
-                System.out.println("Socket Close Error");
-            }
-        }//end finally
+       // System.out.println(line);
     }
 
     public void run() {
@@ -122,12 +103,17 @@ class ServerThread extends Thread{
             is= new BufferedReader(new InputStreamReader(s.getInputStream()));
             os=new PrintWriter(s.getOutputStream());
 
+
         }catch(IOException e){
             System.out.println("IO error in server thread");
         }
 
         try {
-            line=is.readLine();
+            if (line == "Spades"){
+
+            }
+            else{
+            line=is.readLine();}
             while(line.compareTo("QUIT")!=0){
                line = "a "+line;
                 os.println(line);
