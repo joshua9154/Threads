@@ -37,7 +37,7 @@ public class NetworkClient3 {
         try{
             line=br.readLine();
             while(line.compareTo("QUIT")!=0){
-                line = "Client 3 "+line;
+             //   line = "Client 3 "+line;
 
                 os.println(line);
                 os.flush();
