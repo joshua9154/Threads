@@ -13,31 +13,27 @@ import java.util.List;
 public class Server_X_Client_test {
 
     class SharedObject{
-        /*public static List<ServerThread> players = Collections.synchronizedList(new ArrayList<ServerThread>());
-        public static List<String> response = Collections.synchronizedList(new ArrayList<String>());
 
-        public static List<Integer> Player1 = Collections.synchronizedList(new ArrayList<Integer>());
-        public static List<Integer> Player2 = Collections.synchronizedList(new ArrayList<Integer>());
-        public static List<Integer> Player3 = Collections.synchronizedList(new ArrayList<Integer>());
-        */
         public static List<ServerThread> players = Collections.synchronizedList(new ArrayList<ServerThread>());
         public static List<Integer> playerCards = Collections.synchronizedList(new ArrayList<Integer>());
 
+        public static List<Integer> responses = Collections.synchronizedList(new ArrayList<Integer>());
+
         public static int currentPlayerId = -1;
         public static int currentRound = 1;
+
         public static boolean isGameOver = false;
     }
     public static void main(String args[]){
 
 
-        //Socket s=null;
+
         ServerSocket ss2=null;
         System.out.println("Server Listening......");
         int counter =0;
-        //int responses =3;
-        //int[] dealerCards = {4,6,2,5,3,7,1,9,10,13,12,11};
 
-        //this adds a new deck (1-13) and then shuffles for the dealer/server
+
+
         List<Integer> deck = new ArrayList<>();
         for (int i = 1; i <= 13; i++) {
             deck.add(i);
@@ -61,14 +57,11 @@ public class Server_X_Client_test {
 
             try{
 
-              //  s= ss2.accept();
-                System.out.println("connection Established");
-                ServerThread st= server.new ServerThread(ss2.accept(), counter);
+                ServerThread st= server.new ServerThread(ss2.accept(), counter+1);
                 st.start();
+                System.out.println("connection Established");
                 synchronized (SharedObject.players) {
                     SharedObject.players.add(st);
-
-
                     counter++;
                 }
             }
@@ -78,67 +71,54 @@ public class Server_X_Client_test {
                 System.out.println("Connection Error");
 
             }
-         /*   try{
 
-                //s= ss2.accept();
-                System.out.println("connection Established");
-                //ServerThread st=new ServerThread(s);
-                //st.start();
-                //synchronized (SharedObject.players) {
-                //  SharedObject.players.add(st);
-                //}
-                Server_X_Client_test server = new Server_X_Client_test();
-                ServerThread st1 = server.new ServerThread(ss2.accept(), 1);
-                ServerThread st2 = server.new ServerThread(ss2.accept(), 2);
-                ServerThread st3 = server.new ServerThread(ss2.accept(), 3);
-                
+        }
 
-                st1.start();
-                st2.start();
-                st3.start();
+        synchronized (SharedObject.players) {
+            while (SharedObject.players.get(0).response ==0 || SharedObject.players.get(1).response==0 || SharedObject.players.get(2).response==0){
 
-                synchronized (SharedObject.players) {
-                    SharedObject.players.add(st1);
-                    SharedObject.players.add(st2);
-                    SharedObject.players.add(st3);
+            }
+            SharedObject.players.get(0).cardPrompt();
+            SharedObject.players.get(1).cardPrompt();
+            SharedObject.players.get(2).cardPrompt();
+            SharedObject.players.get(0).response=0;
+            SharedObject.players.get(1).response=0;
+            SharedObject.players.get(2).response=0;
+        }
+        synchronized (SharedObject.players) {
+            while (SharedObject.players.get(0).response ==0 || SharedObject.players.get(1).response==0 || SharedObject.players.get(2).response==0){
 
-                counter++;
+            }
+            System.out.println("Round 1");
+        }
+
+        /*
+        System.out.println(""+SharedObject.responses.size());
+        synchronized (SharedObject.responses){
+
+            while (SharedObject.responses.size()<2){
+
             }
         }
-
-
-
-            catch(Exception e){
-                e.printStackTrace();
-                System.out.println("Connection Error");
-
-            }*/
-        }
-
-       /*while (SharedObject.Player1.size() <responses ) {
-           synchronized (SharedObject.players) {
-               SharedObject.players.get(0).card(dealerCards[responses-1]);
-               SharedObject.players.get(1).card(dealerCards[responses]);
-               SharedObject.players.get(2).card(dealerCards[responses+1]);
-           }
-       }*/
-       // players.get(0).card(5);
-       // players.get(1).card(5);
-      //  players.get(2).card(5);
-
+        System.out.println(""+SharedObject.responses.size());
+        */
 
       while (!SharedObject.isGameOver) {
         System.out.println("Round " + SharedObject.currentRound);
         int dealerCard = deck.remove(0);
         System.out.println("Dealer shows card " + dealerCard);
         SharedObject.playerCards.clear();
+
+
         synchronized (SharedObject.players) {
             for (ServerThread player : SharedObject.players) {
                 player.cardPrompt();
+                System.out.println("Deal");
             }
         }
         int highestCard = -1;
         int highestPlayerId = -1;
+
         for (int i = 0; i < SharedObject.playerCards.size(); i++) {
             int card = SharedObject.playerCards.get(i);
             if (card > highestCard) {
@@ -173,12 +153,14 @@ public class Server_X_Client_test {
 class ServerThread extends Thread{
 
     private String line=null;
-    private BufferedReader  is = null;
-    private PrintWriter os=null;
+    private BufferedReader reader = null;
+    private PrintWriter writer =null;
     private Socket s=null;
     private int playerId;
     private int playerCard;
     private int playerPoints;
+
+    private int response=0;
 
     public ServerThread(Socket s, int playerId){
         this.s=s;
@@ -196,10 +178,10 @@ class ServerThread extends Thread{
     }
 
     public void gameOver() {
-        os.println("Game over!");
-        os.flush();
-        os.println("You scored " + playerPoints + " points.");
-        os.flush();
+        writer.println("Game over!");
+        writer.flush();
+        writer.println("You scored " + playerPoints + " points.");
+        writer.flush();
     }
 
 
@@ -210,16 +192,16 @@ class ServerThread extends Thread{
        // System.out.println(Server_X_Client.SharedObject.response.size());
         try {
             //is= new BufferedReader(new InputStreamReader(s.getInputStream()));
-            os=new PrintWriter(s.getOutputStream());
+            writer =new PrintWriter(s.getOutputStream());
             //os.println("spades "+card);
-            os.println("Your turn! Play a card between 1 and 13:");
-            os.flush();
+            writer.println("Your turn! Play a card between 1 and 13:");
+            writer.flush();
             
             while (playerCard == -1) {
                 // Wait for player to enter a number
             }
-            os.println("You played " + playerCard);
-            os.flush();
+            writer.println("You played " + playerCard);
+            writer.flush();
             synchronized (SharedObject.playerCards) {
                 SharedObject.playerCards.add(playerCard);
             }
@@ -235,22 +217,22 @@ class ServerThread extends Thread{
     //new function that allows the server to ask a client for a card input
     public void cardPrompt() {
         try {
-            os = new PrintWriter(s.getOutputStream());
-            os.println("Your turn! Enter a number between 1 and 13:");
-            os.flush();
+            writer = new PrintWriter(s.getOutputStream());
+            writer.println("Your turn! Enter a number between 1 and 13:");
+            writer.flush();
             while (playerCard == -1) {
-                String input = is.readLine();
+                String input = reader.readLine();
                 try {
                     int card = Integer.parseInt(input);
                     if (card >= 1 && card <= 13) {
                         playerCard = card;
                     } else {
-                        os.println("Invalid input. Enter a number between 1 and 13:");
-                        os.flush();
+                        writer.println("Invalid input. Enter a number between 1 and 13:");
+                        writer.flush();
                     }
                 } catch (NumberFormatException e) {
-                    os.println("Invalid input. Enter a number between 1 and 13:");
-                    os.flush();
+                    writer.println("Invalid input. Enter a number between 1 and 13:");
+                    writer.flush();
                 }
             }
         } catch (IOException e) {
@@ -260,15 +242,17 @@ class ServerThread extends Thread{
 
 
 
+
+
     
     public void run() {
         try{
-            is= new BufferedReader(new InputStreamReader(s.getInputStream()));
-            os=new PrintWriter(s.getOutputStream());
-            
-            //client validation response
-            os.println("You are player " + playerId);
-            os.flush();
+            reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+
+            writer =new PrintWriter(s.getOutputStream());
+            writer.println("You are player " + playerId);
+            writer.flush();
+
 
 
         }catch(IOException e){
@@ -276,26 +260,20 @@ class ServerThread extends Thread{
         }
 
         try {
-            /* if (line == "Spades"){                   //commenting this so that we can go back if needed
 
-        }
-            else{
-            line=is.readLine();}
-            while(line.compareTo("QUIT")!=0){
-                Server_X_Client.SharedObject.response.add(line);
-                os.println(line);
-                os.flush();
-                System.out.println("Response to Client  :  "+line);
-                line=is.readLine();
-            } */
-
-
-            line = is.readLine();
+            line = reader.readLine();
             while (line != null) {
+             //   System.out.println(line);
+
+
+                    System.out.println(line);
+                    response++;
+
+
                 if (line.startsWith("Your turn!")) {
                     cardPrompt();
                 }
-                line = is.readLine();
+                line = reader.readLine();
             }
 
         } catch (IOException e) {
@@ -311,13 +289,13 @@ class ServerThread extends Thread{
         finally{
             try{
                 System.out.println("Connection Closing..");
-                if (is!=null){
-                    is.close();
+                if (reader !=null){
+                    reader.close();
                     System.out.println(" Socket Input Stream Closed");
                 }
 
-                if(os!=null){
-                    os.close();
+                if(writer !=null){
+                    writer.close();
                     System.out.println("Socket Out Closed");
                 }
                 if (s!=null){

@@ -31,7 +31,7 @@ public class NetworkClient3 {
         }
 
         System.out.println("Client Address : "+address);
-        System.out.println("Enter Data to echo Server ( Enter QUIT to end):");
+        System.out.println("Press any key to being and then enter to begin :");
 
         String response=null;
         try{
