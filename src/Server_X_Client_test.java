@@ -73,35 +73,45 @@ public class Server_X_Client_test {
             }
 
         }
+        while(SharedObject.currentRound<14) {
+            synchronized (SharedObject.players) {
+                while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
 
-        synchronized (SharedObject.players) {
-            while (SharedObject.players.get(0).response ==0 || SharedObject.players.get(1).response==0 || SharedObject.players.get(2).response==0){
+                }
+
+                System.out.println("round "+SharedObject.currentRound );
+                int dealerCard = deck.remove(0);
+                System.out.println("Dealer shows card " + dealerCard);
+
+
+                SharedObject.players.get(0).broadcast("Dealer shows card " + dealerCard);
+                SharedObject.players.get(1).broadcast("Dealer shows card " + dealerCard);
+                SharedObject.players.get(2).broadcast("Dealer shows card " + dealerCard);
+
+                SharedObject.players.get(0).clearCard();
+                SharedObject.players.get(1).clearCard();
+                SharedObject.players.get(2).clearCard();
+
+                SharedObject.players.get(0).cardPrompt();
+                SharedObject.players.get(1).cardPrompt();
+                SharedObject.players.get(2).cardPrompt();
+
+
+                System.out.println( SharedObject.players.get(0).playerCard);
+                System.out.println( SharedObject.players.get(1).playerCard);
+                System.out.println( SharedObject.players.get(2).playerCard);
+
+
+                SharedObject.currentRound++;
+
+                SharedObject.players.get(0).response = SharedObject.currentRound - 1;
+                SharedObject.players.get(1).response = SharedObject.currentRound - 1;
+                SharedObject.players.get(2).response = SharedObject.currentRound - 1;
+
 
             }
-            SharedObject.players.get(0).cardPrompt();
-            SharedObject.players.get(1).cardPrompt();
-            SharedObject.players.get(2).cardPrompt();
-            SharedObject.players.get(0).response=0;
-            SharedObject.players.get(1).response=0;
-            SharedObject.players.get(2).response=0;
-        }
-        synchronized (SharedObject.players) {
-            while (SharedObject.players.get(0).response ==0 || SharedObject.players.get(1).response==0 || SharedObject.players.get(2).response==0){
-
-            }
-            System.out.println("Round 1");
         }
 
-        /*
-        System.out.println(""+SharedObject.responses.size());
-        synchronized (SharedObject.responses){
-
-            while (SharedObject.responses.size()<2){
-
-            }
-        }
-        System.out.println(""+SharedObject.responses.size());
-        */
 
       while (!SharedObject.isGameOver) {
         System.out.println("Round " + SharedObject.currentRound);
@@ -159,8 +169,9 @@ class ServerThread extends Thread{
     private int playerId;
     private int playerCard;
     private int playerPoints;
-
     private int response=0;
+
+
 
     public ServerThread(Socket s, int playerId){
         this.s=s;
@@ -185,39 +196,41 @@ class ServerThread extends Thread{
     }
 
 
+    public void broadcast (String message)  {
 
-    public void card (int card)  {
+            writer.println(message);
+            writer.flush();
 
-       //line = "Spades"+ card ;
-       // System.out.println(Server_X_Client.SharedObject.response.size());
+    }
+
+
+    public void card ()  {
+
         try {
-            //is= new BufferedReader(new InputStreamReader(s.getInputStream()));
-            writer =new PrintWriter(s.getOutputStream());
-            //os.println("spades "+card);
+
             writer.println("Your turn! Play a card between 1 and 13:");
             writer.flush();
-            
-            while (playerCard == -1) {
-                // Wait for player to enter a number
+            line = reader.readLine();
+            while (line != null) {
+                playerCard = Integer.parseInt(line);
             }
+
             writer.println("You played " + playerCard);
             writer.flush();
-            synchronized (SharedObject.playerCards) {
-                SharedObject.playerCards.add(playerCard);
-            }
+
         } 
         catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-       // System.out.println(line);
+
     }
 
 
     //new function that allows the server to ask a client for a card input
     public void cardPrompt() {
         try {
-            writer = new PrintWriter(s.getOutputStream());
+            //writer = new PrintWriter(s.getOutputStream());
             writer.println("Your turn! Enter a number between 1 and 13:");
             writer.flush();
             while (playerCard == -1) {
@@ -248,8 +261,8 @@ class ServerThread extends Thread{
     public void run() {
         try{
             reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-
             writer =new PrintWriter(s.getOutputStream());
+
             writer.println("You are player " + playerId);
             writer.flush();
 
@@ -263,14 +276,11 @@ class ServerThread extends Thread{
 
             line = reader.readLine();
             while (line != null) {
-             //   System.out.println(line);
+                   if(response==0){
+                       response++;
+                   }
 
-
-                    System.out.println(line);
-                    response++;
-
-
-                if (line.startsWith("Your turn!")) {
+                else  {
                     cardPrompt();
                 }
                 line = reader.readLine();
