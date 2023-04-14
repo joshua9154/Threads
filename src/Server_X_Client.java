@@ -27,7 +27,7 @@ public class Server_X_Client {
         ServerSocket ss2=null;
         System.out.println("Server Listening......");
         int counter =0;
-        int responses =3;
+        int responses =1;
         int[] dealerCards = {4,6,2,5,3,7,1,9,10,13,12,11};
         try{
             ss2 = new ServerSocket(4445); // can also use static final PORT_NUM , when defined
@@ -69,9 +69,9 @@ public class Server_X_Client {
 
        while (SharedObject.Player1.size() <responses ) {
            synchronized (SharedObject.players) {
-               SharedObject.players.get(0).card(dealerCards[responses-1]);
+               SharedObject.players.get(0).card(dealerCards[responses]);
                SharedObject.players.get(1).card(dealerCards[responses]);
-               SharedObject.players.get(2).card(dealerCards[responses+1]);
+               SharedObject.players.get(2).card(dealerCards[responses]);
            }
        }
        // players.get(0).card(5);
@@ -99,6 +99,9 @@ class ServerThread extends Thread{
        // System.out.println(Server_X_Client.SharedObject.response.size());
         try {
             is= new BufferedReader(new InputStreamReader(s.getInputStream()));
+
+                line=is.readLine();
+                System.out.println(line);
             os=new PrintWriter(s.getOutputStream());
             os.println("spades "+card);
             os.flush();

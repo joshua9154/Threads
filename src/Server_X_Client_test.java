@@ -55,9 +55,30 @@ public class Server_X_Client_test {
         }
        // ArrayList<ServerThread>  players =new ArrayList<>();
 
-
+        Server_X_Client_test server = new Server_X_Client_test();
         while(counter <3){
+
+
             try{
+
+              //  s= ss2.accept();
+                System.out.println("connection Established");
+                ServerThread st= server.new ServerThread(ss2.accept(), counter);
+                st.start();
+                synchronized (SharedObject.players) {
+                    SharedObject.players.add(st);
+
+
+                    counter++;
+                }
+            }
+
+            catch(Exception e){
+                e.printStackTrace();
+                System.out.println("Connection Error");
+
+            }
+         /*   try{
 
                 //s= ss2.accept();
                 System.out.println("connection Established");
@@ -91,7 +112,7 @@ public class Server_X_Client_test {
                 e.printStackTrace();
                 System.out.println("Connection Error");
 
-            }
+            }*/
         }
 
        /*while (SharedObject.Player1.size() <responses ) {
