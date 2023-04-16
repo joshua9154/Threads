@@ -48,19 +48,7 @@ public class NetworkClient3 {
             }
 
             
-         /*   for (int i = 0; i < 13; i++) {
-                // Read input from the terminal
-                line = br.readLine();
-                
-                // Send input to the server
-                os.println(line);
-                os.flush();
 
-                // Read the server's response
-                response = is.readLine();
-                System.out.println("Server Response: " + response);
-
-        }*/
     }
         catch(IOException e){
             e.printStackTrace();

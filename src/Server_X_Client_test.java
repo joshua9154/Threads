@@ -24,6 +24,8 @@ public class Server_X_Client_test {
         public static int playerThreePoints = 0;
         public static int currentRound = 1;
 
+        public static int Round = 1;
+
         //     public static boolean isGameOver = false;
     }
 
@@ -126,7 +128,11 @@ public class Server_X_Client_test {
         System.out.println("Players Here");
 
 
-        while (SharedObject.currentRound < 14) {
+        while (SharedObject.Round < 14) {
+            System.out.println("System round 0 " + SharedObject.currentRound);
+            System.out.println(SharedObject.players.get(0).response);
+            System.out.println(SharedObject.players.get(1).response);
+            System.out.println(SharedObject.players.get(2).response);
             synchronized (SharedObject.players) {
                 String winner;
                 int res=0;
@@ -136,11 +142,23 @@ public class Server_X_Client_test {
                 System.out.println("Dealer shows card " + dealerCard);
 
                 SharedObject.currentRound++;
+                System.out.println("System round 1 " + SharedObject.currentRound);
+                System.out.println(SharedObject.players.get(0).response);
+                System.out.println(SharedObject.players.get(1).response);
+                System.out.println(SharedObject.players.get(2).response);
+                SharedObject.players.get(0).response=SharedObject.currentRound-1;
+                SharedObject.players.get(1).response=SharedObject.currentRound-1;
+                SharedObject.players.get(2).response=SharedObject.currentRound-1;
+
                 SharedObject.players.get(0).message = "The Dealers card is " + dealerCard;
                 SharedObject.players.get(1).message = "The Dealers card is " + dealerCard;
                 SharedObject.players.get(2).message = "The Dealers card is " + dealerCard;
 
                 SharedObject.currentRound++;
+                System.out.println("System round 2 " + SharedObject.currentRound);
+                System.out.println(SharedObject.players.get(0).response);
+                System.out.println(SharedObject.players.get(1).response);
+                System.out.println(SharedObject.players.get(2).response);
                 while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
 
                     if (SharedObject.players.get(0).response >= SharedObject.currentRound) {
@@ -155,6 +173,11 @@ public class Server_X_Client_test {
                 }
 
                 SharedObject.currentRound++;
+                System.out.println("System round " + SharedObject.currentRound);
+
+                System.out.println(SharedObject.players.get(0).response);
+                System.out.println(SharedObject.players.get(1).response);
+                System.out.println(SharedObject.players.get(2).response);
                 while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
                    winner= "Everyone Lost";
                     res =Results(SharedObject.players.get(0).playerCard, SharedObject.players.get(1).playerCard, SharedObject.players.get(2).playerCard, dealerCard);
@@ -189,11 +212,15 @@ public class Server_X_Client_test {
 
 
             }
+            SharedObject.Round++;
         }
         synchronized (SharedObject.players) {
             System.out.println("Player 1 Points "+SharedObject.playerOnePoints);
             System.out.println("Player 2 Points "+SharedObject.playerTwoPoints);
             System.out.println("Player 3 Points "+SharedObject.playerThreePoints);
+            SharedObject.players.get(0).message = "Player 1 Points "+SharedObject.playerOnePoints;
+            SharedObject.players.get(1).message = "Player 2 Points "+SharedObject.playerTwoPoints;
+            SharedObject.players.get(2).message = "Player 3 Points "+SharedObject.playerThreePoints;
 
         }
 
@@ -255,6 +282,11 @@ public class Server_X_Client_test {
                         writer.println(message);
                         message = "";
                         response++;
+                        if(message.contains("Points")){
+                            reader.close();
+                            writer.close();
+                            s.close();
+                        }
                     } else
                         try {
                             int card = Integer.parseInt(line);
