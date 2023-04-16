@@ -83,14 +83,22 @@ public class Server_X_Client_test {
             SharedObject.players.get(1).dealerCard = dealerCard;
             SharedObject.players.get(2).dealerCard = dealerCard;
             while (SharedObject.players.get(0).response < 1 || SharedObject.players.get(1).response < 1 || SharedObject.players.get(2).response < 1) {
+
             }
+            String winner =   "Player 1's Card "+ SharedObject.players.get(0).playerCard +" Player 2's Card "+ SharedObject.players.get(1).playerCard +" Player 3's Card "+ SharedObject.players.get(2).playerCard ;
+            SharedObject.players.get(0).message = winner;
+            SharedObject.players.get(1).message = winner;
+            SharedObject.players.get(2).message = winner;
 
         }
         System.out.println("Players Here");
+
+
         while(SharedObject.currentRound<14) {
             synchronized (SharedObject.players) {
                 while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
-                 //  if (SharedObject.players.get(0).response >= SharedObject.currentRound){ SharedObject.players.get(0).wait=true;}
+
+                    //  if (SharedObject.players.get(0).response >= SharedObject.currentRound){ SharedObject.players.get(0).wait=true;}
                 //   if (SharedObject.players.get(1).response >= SharedObject.currentRound){ SharedObject.players.get(1).wait=true;}
                //    if (SharedObject.players.get(2).response >= SharedObject.currentRound){ SharedObject.players.get(2).wait=true;}
                 }
@@ -195,6 +203,8 @@ class ServerThread extends Thread{
     private String line=null;
 
     private String lastResponse="";
+
+    private String message="";
     private BufferedReader reader = null;
     private PrintWriter writer =null;
     private Socket s=null;
@@ -312,20 +322,19 @@ class ServerThread extends Thread{
             reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
             writer = new PrintWriter(s.getOutputStream());
 
-         //  wait=false;
             line = reader.readLine();
             while (line != null) {
 
-                if (this.wait)  {
-                    writer.println("We are waiting on other Players");
-
+                if (message!="")  {
+                    writer.println(message);
+                    message="";
                 }
               else if (dealerCard!= lastDealerCard) {
                        if(response==0){
-                           writer.println("You are player " + playerId+"The Dealer Plays " + dealerCard + " Your turn! Enter a number between 1 and 13:");
+                           writer.println("You are player " + playerId+" The Dealer Plays " + dealerCard + " Your turn! Enter a number between 1 and 13:");
+                       }else {
+                           writer.println("The Dealer Plays " + dealerCard + " Your turn! Enter a number between 1 and 13:" + " Your last card was " + playerCard);
                        }
-                    writer.println("The Dealer Plays " + dealerCard + " Your turn! Enter a number between 1 and 13:"+ " Your last card was "+playerCard);
-
                     lastDealerCard = dealerCard;
 
                     playerCard = 0;
@@ -333,14 +342,13 @@ class ServerThread extends Thread{
                     if (line != lastResponse && dealerCard != 0) {
                         System.out.println(line);
                         lastResponse = line;
-                        response++;
+
 
                         try {
                             int card = Integer.parseInt(line);
                             if (card >= 1 && card <= 13) {
                                 playerCard = card;
-                              //  writer.println("You are played this card " + playerCard);
-                                //    this.wait= true;
+                                response++;
                             } else {
                                 System.out.println(line);
                                 writer.println("Invalid input. Enter a number between 1 and 13:");
