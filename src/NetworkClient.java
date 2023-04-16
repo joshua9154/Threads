@@ -35,7 +35,7 @@ public class NetworkClient {
 
         String response=null;
         try{
-           /*  line=br.readLine();              //again just block commenting so we can reuse if necessary
+             line=br.readLine();              //again just block commenting so we can reuse if necessary
             while(line.compareTo("QUIT")!=0){
                // line = "Client 1 "+line;
 
@@ -45,13 +45,14 @@ public class NetworkClient {
                 System.out.println("Server Response : "+response);
                 line=br.readLine();
 
-            } */
+            }
 
             
-            for (int i = 0; i < 13; i++) {
+          /*  for (int i = 0; i < 13; i++) {
                 // Read input from the terminal
+            while(true) {
                 line = br.readLine();
-                
+
                 // Send input to the server
                 os.println(line);
                 os.flush();
@@ -59,10 +60,10 @@ public class NetworkClient {
                 // Read the server's response
                 response = is.readLine();
                 System.out.println("Server Response: " + response);
+            }
 
-
-
-        }
+*/
+    //    }
     }
         catch(IOException e){
             e.printStackTrace();
