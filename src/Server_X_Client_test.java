@@ -80,9 +80,9 @@ public class Server_X_Client_test {
             System.out.println("Dealer shows card " + dealerCard);
 
 
-            SharedObject.players.get(0).message = "You are Player 1 and your Suite is Hearts and the Dealers card is " + dealerCard;
-            SharedObject.players.get(1).message = "You are Player 2 and your Suite is Diamonds and the Dealers card is " + dealerCard;
-            SharedObject.players.get(2).message = "You are Player 3 and your Suite is Clubs and the Dealers card is " + dealerCard;
+            SharedObject.players.get(0).message = "You are Player 1 and your Suite is Hearts and the Dealers card is " + dealerCard+ " of Spades";
+            SharedObject.players.get(1).message = "You are Player 2 and your Suite is Diamonds and the Dealers card is " + dealerCard+ " of Spades";
+            SharedObject.players.get(2).message = "You are Player 3 and your Suite is Clubs and the Dealers card is " + dealerCard+ " of Spades";
 
             SharedObject.currentRound++;
 
@@ -167,7 +167,7 @@ public class Server_X_Client_test {
 
                 System.out.println("round " + SharedObject.currentRound);
                 int dealerCard = deck.remove(0);
-                System.out.println("Dealer shows card " + dealerCard);
+                System.out.println("Dealer shows card " + dealerCard + " of Spades");
 
                 SharedObject.currentRound++;
                 System.out.println("System round 1 " + SharedObject.currentRound);
@@ -310,6 +310,8 @@ public class Server_X_Client_test {
         private PrintWriter writer = null;
         private Socket s = null;
         private int playerId;
+
+        private String suite;
         private int playerCard;
         private int response = 0;
         private ArrayList<Integer> taken = new ArrayList<Integer>();
@@ -319,6 +321,15 @@ public class Server_X_Client_test {
             this.s = s;
             this.playerId = playerId;
 
+            if(playerId==1){
+                suite="Hearts";
+            }
+            else if(playerId==2){
+                suite="Diamonds";
+            }
+            else {
+                suite= "Clubs";
+            }
         }
 
 
@@ -346,7 +357,7 @@ public class Server_X_Client_test {
                             if (taken.contains(card)) {
                                 writer.println("Invalid input. you already used that card:");
                             } else if (card >= 1 && card <= 13) {
-                                writer.println("You choose " + card);
+                                writer.println("You choose " + card+ " of "+suite);
                                 playerCard = card;
                                 taken.add(card);
                                 response++;
