@@ -78,9 +78,9 @@ public class Server_X_Client_test {
         while(SharedObject.currentRound<14) {
             synchronized (SharedObject.players) {
                 while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
-                   if (SharedObject.players.get(0).response >= SharedObject.currentRound){ SharedObject.players.get(0).wait=true;}
-                   if (SharedObject.players.get(1).response >= SharedObject.currentRound){ SharedObject.players.get(1).wait=true;}
-                   if (SharedObject.players.get(2).response >= SharedObject.currentRound){ SharedObject.players.get(2).wait=true;}
+                 //  if (SharedObject.players.get(0).response >= SharedObject.currentRound){ SharedObject.players.get(0).wait=true;}
+                //   if (SharedObject.players.get(1).response >= SharedObject.currentRound){ SharedObject.players.get(1).wait=true;}
+               //    if (SharedObject.players.get(2).response >= SharedObject.currentRound){ SharedObject.players.get(2).wait=true;}
                 }
 
 
@@ -313,26 +313,21 @@ class ServerThread extends Thread{
                     //   writer.flush();
                        response++;
                    } else if (dealerCard!= lastDealerCard) {
-                       writer.println("The Dealer Plays " + dealerCard);
+                       writer.println("The Dealer Plays " + dealerCard + " Your turn! Enter a number between 1 and 13:");
                     //   writer.flush();
                        lastDealerCard=dealerCard;
 
-                   } else if(line!= lastResponse){
-                       writer.println("You are played this card " + line);
-                    //   writer.flush();
+                   } else if(line!= lastResponse && dealerCard!=0){
+
                     lastResponse=line;
                     response++;
-                }
 
-
-                 else{
-                       writer.println("Your turn! Enter a number between 1 and 13:");
-                    //   writer.flush();
                        try {
                            int card = Integer.parseInt(line);
                            if (card >= 1 && card <= 13) {
                                playerCard = card;
-                             //  this.wait= true;
+                               writer.println("You are played this card " + playerCard);
+                           //    this.wait= true;
                            } else {
                                System.out.println(line);
                                writer.println("Invalid input. Enter a number between 1 and 13:");
@@ -343,7 +338,7 @@ class ServerThread extends Thread{
 
                        }
                    }
-                 // line= null;
+
                 writer.flush();
             }
 
