@@ -73,8 +73,11 @@ public class Server_X_Client_test {
             }
 
         }
-
-
+        synchronized (SharedObject.players) {
+            while (SharedObject.players.get(0).response < 1 || SharedObject.players.get(1).response < 1 || SharedObject.players.get(2).response < 1) {
+            }
+        }
+        System.out.println("Players Here");
         while(SharedObject.currentRound<14) {
             synchronized (SharedObject.players) {
                 while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
@@ -312,34 +315,38 @@ class ServerThread extends Thread{
                        writer.println("You are player " + playerId);
                     //   writer.flush();
                        response++;
+
                    } else if (dealerCard!= lastDealerCard) {
-                       writer.println("The Dealer Plays " + dealerCard + " Your turn! Enter a number between 1 and 13:");
+                    writer.println("The Dealer Plays " + dealerCard + " Your turn! Enter a number between 1 and 13:");
                     //   writer.flush();
-                       lastDealerCard=dealerCard;
+                    lastDealerCard = dealerCard;
+                    //     line="";
+                    playerCard = 0;
 
-                   } else if(line!= lastResponse && dealerCard!=0){
+                    if (line != lastResponse && dealerCard != 0) {
+                        System.out.println(line);
+                        lastResponse = line;
+                        response++;
 
-                    lastResponse=line;
-                    response++;
+                        try {
+                            int card = Integer.parseInt(line);
+                            if (card >= 1 && card <= 13) {
+                                playerCard = card;
+                                writer.println("You are played this card " + playerCard);
+                                //    this.wait= true;
+                            } else {
+                                System.out.println(line);
+                                writer.println("Invalid input. Enter a number between 1 and 13:");
+                                //      writer.flush();
+                            }
+                        } catch (NumberFormatException e) {
+                            writer.println("Invalid input. Enter a number between 1 and 13:");
 
-                       try {
-                           int card = Integer.parseInt(line);
-                           if (card >= 1 && card <= 13) {
-                               playerCard = card;
-                               writer.println("You are played this card " + playerCard);
-                           //    this.wait= true;
-                           } else {
-                               System.out.println(line);
-                               writer.println("Invalid input. Enter a number between 1 and 13:");
-                         //      writer.flush();
-                           }
-                       } catch (NumberFormatException e) {
-                           writer.println("Invalid input. Enter a number between 1 and 13:");
-
-                       }
-                   }
-
+                        }
+                    }
+                }
                 writer.flush();
+                line = reader.readLine();
             }
 
         } catch (IOException e) {
