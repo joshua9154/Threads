@@ -20,7 +20,7 @@ public class Server_X_Client_test {
         public static List<Integer> responses = Collections.synchronizedList(new ArrayList<Integer>());
 
         public static int currentPlayerId = -1;
-        public static int currentRound = 2;
+        public static int currentRound = 1;
 
         public static boolean isGameOver = false;
     }
@@ -74,22 +74,37 @@ public class Server_X_Client_test {
 
         }
         synchronized (SharedObject.players) {
-            System.out.println("round "+SharedObject.currentRound );
+
+            System.out.println("round 1");
             int dealerCard = deck.remove(0);
             System.out.println("Dealer shows card " + dealerCard);
 
 
-            SharedObject.players.get(0).dealerCard = dealerCard;
+           /* SharedObject.players.get(0).dealerCard = dealerCard;
             SharedObject.players.get(1).dealerCard = dealerCard;
-            SharedObject.players.get(2).dealerCard = dealerCard;
-            while (SharedObject.players.get(0).response < 1 || SharedObject.players.get(1).response < 1 || SharedObject.players.get(2).response < 1) {
-                if (SharedObject.players.get(0).response >= 1){ SharedObject.players.get(0).message="Waiting on other Players";}
-                if (SharedObject.players.get(1).response >= 1){ SharedObject.players.get(1).message="Waiting on other Players";}
-                if (SharedObject.players.get(2).response >= 1){ SharedObject.players.get(2).message="Waiting on other Players";}
+            SharedObject.players.get(2).dealerCard = dealerCard;*/
+
+            SharedObject.players.get(0).message="You are Player 1 and the Dealers card is "+dealerCard;
+            SharedObject.players.get(1).message="You are Player 2 and the Dealers card is "+dealerCard;
+            SharedObject.players.get(2).message="You are Player 3 and the Dealers card is "+dealerCard;
+
+            SharedObject.currentRound++;
+            while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
+                if (SharedObject.players.get(0).response >= SharedObject.currentRound){ SharedObject.players.get(0).message="Waiting on other Players";}
+                if (SharedObject.players.get(1).response >= SharedObject.currentRound){ SharedObject.players.get(1).message="Waiting on other Players";}
+                if (SharedObject.players.get(2).response >= SharedObject.currentRound){ SharedObject.players.get(2).message="Waiting on other Players";}
             }
-            SharedObject.players.get(0).message="";
-            SharedObject.players.get(1).message="";
-            SharedObject.players.get(2).message="";
+
+            SharedObject.currentRound++;
+
+
+            while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
+                String winner =   "Player 1's Card "+ SharedObject.players.get(0).playerCard +" Player 2's Card "+ SharedObject.players.get(1).playerCard +" Player 3's Card "+ SharedObject.players.get(2).playerCard ;
+                SharedObject.players.get(0).message = winner;
+                SharedObject.players.get(1).message = winner;
+                SharedObject.players.get(2).message = winner;
+
+            }
 
         }
         System.out.println("Players Here");
@@ -97,6 +112,17 @@ public class Server_X_Client_test {
 
         while(SharedObject.currentRound<14) {
             synchronized (SharedObject.players) {
+
+                System.out.println("round "+SharedObject.currentRound );
+                int dealerCard = deck.remove(0);
+                System.out.println("Dealer shows card " + dealerCard);
+
+                SharedObject.currentRound++;
+                SharedObject.players.get(0).message="The Dealers card is "+dealerCard;
+                SharedObject.players.get(1).message="The Dealers card is "+dealerCard;
+                SharedObject.players.get(2).message="The Dealers card is "+dealerCard;
+
+                SharedObject.currentRound++;
                 while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
 
                     if (SharedObject.players.get(0).response >= SharedObject.currentRound){ SharedObject.players.get(0).message="Waiting on other Players";}
@@ -104,12 +130,15 @@ public class Server_X_Client_test {
                    if (SharedObject.players.get(2).response >= SharedObject.currentRound){ SharedObject.players.get(2).message="Waiting on other Players";}
                 }
 
-                String winner =   "Player 1's Card "+ SharedObject.players.get(0).playerCard +" Player 2's Card "+ SharedObject.players.get(1).playerCard +" Player 3's Card "+ SharedObject.players.get(2).playerCard ;
-                SharedObject.players.get(0).message = winner;
-                SharedObject.players.get(1).message = winner;
-                SharedObject.players.get(2).message = winner;
+                SharedObject.currentRound++;
+                while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
+                    String winner =   "Player 1's Card "+ SharedObject.players.get(0).playerCard +" Player 2's Card "+ SharedObject.players.get(1).playerCard +" Player 3's Card "+ SharedObject.players.get(2).playerCard ;
+                    SharedObject.players.get(0).message = winner;
+                    SharedObject.players.get(1).message = winner;
+                    SharedObject.players.get(2).message = winner;
 
-                System.out.println("round "+SharedObject.currentRound );
+                }
+             /*   System.out.println("round "+SharedObject.currentRound );
                 int dealerCard = deck.remove(0);
                 System.out.println("Dealer shows card " + dealerCard);
 
@@ -121,7 +150,7 @@ public class Server_X_Client_test {
                 SharedObject.players.get(0).wait=false;
                 SharedObject.players.get(1).wait=false;
                 SharedObject.players.get(2).wait=false;
-
+            */
 
 
 
@@ -140,7 +169,7 @@ public class Server_X_Client_test {
                 System.out.println( SharedObject.players.get(0).playerCard);
                 System.out.println( SharedObject.players.get(1).playerCard);
                 System.out.println( SharedObject.players.get(2).playerCard);
-
+              /*
                 SharedObject.players.get(0).begin();
                 SharedObject.players.get(1).begin();
                 SharedObject.players.get(2).begin();
@@ -149,7 +178,7 @@ public class Server_X_Client_test {
 
                 SharedObject.players.get(0).response = SharedObject.currentRound - 1;
                 SharedObject.players.get(1).response = SharedObject.currentRound - 1;
-                SharedObject.players.get(2).response = SharedObject.currentRound - 1;
+                SharedObject.players.get(2).response = SharedObject.currentRound - 1;*/
 
 
             }
@@ -319,8 +348,73 @@ class ServerThread extends Thread{
 
 
 
+    public void run() {
 
-    
+        try {
+            reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            writer = new PrintWriter(s.getOutputStream());
+
+            line = reader.readLine();
+            while (line != null) {
+
+                if (message!="")  {
+                    writer.println(message);
+                    message="";
+                    response++;
+                }
+                else
+                            try {
+                                int card = Integer.parseInt(line);
+                                if (card >= 1 && card <= 13) {
+                                    writer.println("You Choose "+card);
+                                    playerCard = card;
+                                    response++;
+                                } else {
+                                    System.out.println(line);
+                                    writer.println("Invalid input. Enter a number between 1 and 13:");
+                                    //      writer.flush();
+                                }
+                            } catch (NumberFormatException e) {
+                                writer.println("Invalid input. Enter a number between 1 and 13:");
+                }
+                writer.flush();
+                line = reader.readLine();
+            }
+
+        } catch (IOException e) {
+
+            line=this.getName(); //reused String line for getting thread name
+            System.out.println("IO Error/ Client "+line+" terminated abruptly");
+        }
+        catch(NullPointerException e){
+            line=this.getName(); //reused String line for getting thread name
+            System.out.println("Client "+line+" Closed");
+        }
+
+        finally{
+            try{
+                System.out.println("Connection Closing..");
+                if (reader !=null){
+                    reader.close();
+                    System.out.println(" Socket Input Stream Closed");
+                }
+
+                if(writer !=null){
+                    writer.close();
+                    System.out.println("Socket Out Closed");
+                }
+                if (s!=null){
+                    s.close();
+                    System.out.println("Socket Closed");
+                }
+
+            }
+            catch(IOException ie){
+                System.out.println("Socket Close Error");
+            }
+        }//end finally
+    }
+    /*
     public void run() {
 
         try {
@@ -403,7 +497,7 @@ class ServerThread extends Thread{
                 System.out.println("Socket Close Error");
             }
         }//end finally
-    }
+    }*/
 }
 }
 
