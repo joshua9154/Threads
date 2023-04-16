@@ -12,26 +12,27 @@ import java.util.List;
 
 public class Server_X_Client_test {
 
-    class SharedObject{
+    class SharedObject {
 
         public static List<ServerThread> players = Collections.synchronizedList(new ArrayList<ServerThread>());
-        public static List<Integer> playerCards = Collections.synchronizedList(new ArrayList<Integer>());
+        //   public static List<Integer> playerCards = Collections.synchronizedList(new ArrayList<Integer>());
 
-        public static List<Integer> responses = Collections.synchronizedList(new ArrayList<Integer>());
+        //   public static List<Integer> responses = Collections.synchronizedList(new ArrayList<Integer>());
 
-        public static int currentPlayerId = -1;
+        public static int playerOnePoints = 0;
+        public static int playerTwoPoints = 0;
+        public static int playerThreePoints = 0;
         public static int currentRound = 1;
 
-        public static boolean isGameOver = false;
+        //     public static boolean isGameOver = false;
     }
-    public static void main(String args[]){
+
+    public static void main(String args[]) {
 
 
-
-        ServerSocket ss2=null;
+        ServerSocket ss2 = null;
         System.out.println("Server Listening......");
-        int counter =0;
-
+        int counter = 0;
 
 
         List<Integer> deck = new ArrayList<>();
@@ -40,33 +41,30 @@ public class Server_X_Client_test {
         }
         Collections.shuffle(deck);
 
-        try{
+        try {
             ss2 = new ServerSocket(4445); // can also use static final PORT_NUM , when defined
 
-        }
-        catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Server error");
 
         }
-       // ArrayList<ServerThread>  players =new ArrayList<>();
+
 
         Server_X_Client_test server = new Server_X_Client_test();
-        while(counter <3){
+        while (counter < 3) {
 
 
-            try{
+            try {
 
-                ServerThread st= server.new ServerThread(ss2.accept(), counter+1);
+                ServerThread st = server.new ServerThread(ss2.accept(), counter + 1);
                 st.start();
                 System.out.println("connection Established");
                 synchronized (SharedObject.players) {
                     SharedObject.players.add(st);
                     counter++;
                 }
-            }
-
-            catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("Connection Error");
 
@@ -80,29 +78,47 @@ public class Server_X_Client_test {
             System.out.println("Dealer shows card " + dealerCard);
 
 
-           /* SharedObject.players.get(0).dealerCard = dealerCard;
-            SharedObject.players.get(1).dealerCard = dealerCard;
-            SharedObject.players.get(2).dealerCard = dealerCard;*/
-
-            SharedObject.players.get(0).message="You are Player 1 and the Dealers card is "+dealerCard;
-            SharedObject.players.get(1).message="You are Player 2 and the Dealers card is "+dealerCard;
-            SharedObject.players.get(2).message="You are Player 3 and the Dealers card is "+dealerCard;
+            SharedObject.players.get(0).message = "You are Player 1 and the Dealers card is " + dealerCard;
+            SharedObject.players.get(1).message = "You are Player 2 and the Dealers card is " + dealerCard;
+            SharedObject.players.get(2).message = "You are Player 3 and the Dealers card is " + dealerCard;
 
             SharedObject.currentRound++;
+
+
             while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
-                if (SharedObject.players.get(0).response >= SharedObject.currentRound){ SharedObject.players.get(0).message="Waiting on other Players";}
-                if (SharedObject.players.get(1).response >= SharedObject.currentRound){ SharedObject.players.get(1).message="Waiting on other Players";}
-                if (SharedObject.players.get(2).response >= SharedObject.currentRound){ SharedObject.players.get(2).message="Waiting on other Players";}
+                if (SharedObject.players.get(0).response >= SharedObject.currentRound) {
+                    SharedObject.players.get(0).message = "Waiting on other Players";
+                }
+                if (SharedObject.players.get(1).response >= SharedObject.currentRound) {
+                    SharedObject.players.get(1).message = "Waiting on other Players";
+                }
+                if (SharedObject.players.get(2).response >= SharedObject.currentRound) {
+                    SharedObject.players.get(2).message = "Waiting on other Players";
+                }
             }
 
             SharedObject.currentRound++;
 
 
             while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
-                String winner =   "Player 1's Card "+ SharedObject.players.get(0).playerCard +" Player 2's Card "+ SharedObject.players.get(1).playerCard +" Player 3's Card "+ SharedObject.players.get(2).playerCard ;
+                String winner= "Everyone Lost";
+                int res =Results(SharedObject.players.get(0).playerCard, SharedObject.players.get(1).playerCard, SharedObject.players.get(2).playerCard, dealerCard);
+                if( res!=0){
+                    winner= "The Winning Number is "+res;
+                }
                 SharedObject.players.get(0).message = winner;
                 SharedObject.players.get(1).message = winner;
                 SharedObject.players.get(2).message = winner;
+
+                if (SharedObject.players.get(0).response >= SharedObject.currentRound) {
+                    SharedObject.players.get(0).message = "Waiting on other Players";
+                }
+                if (SharedObject.players.get(1).response >= SharedObject.currentRound) {
+                    SharedObject.players.get(1).message = "Waiting on other Players";
+                }
+                if (SharedObject.players.get(2).response >= SharedObject.currentRound) {
+                    SharedObject.players.get(2).message = "Waiting on other Players";
+                }
 
             }
 
@@ -110,416 +126,186 @@ public class Server_X_Client_test {
         System.out.println("Players Here");
 
 
-        while(SharedObject.currentRound<14) {
+        while (SharedObject.currentRound < 14) {
             synchronized (SharedObject.players) {
+                String winner;
+                int res=0;
 
-                System.out.println("round "+SharedObject.currentRound );
+                System.out.println("round " + SharedObject.currentRound);
                 int dealerCard = deck.remove(0);
                 System.out.println("Dealer shows card " + dealerCard);
 
                 SharedObject.currentRound++;
-                SharedObject.players.get(0).message="The Dealers card is "+dealerCard;
-                SharedObject.players.get(1).message="The Dealers card is "+dealerCard;
-                SharedObject.players.get(2).message="The Dealers card is "+dealerCard;
+                SharedObject.players.get(0).message = "The Dealers card is " + dealerCard;
+                SharedObject.players.get(1).message = "The Dealers card is " + dealerCard;
+                SharedObject.players.get(2).message = "The Dealers card is " + dealerCard;
 
                 SharedObject.currentRound++;
                 while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
 
-                    if (SharedObject.players.get(0).response >= SharedObject.currentRound){ SharedObject.players.get(0).message="Waiting on other Players";}
-                   if (SharedObject.players.get(1).response >= SharedObject.currentRound){ SharedObject.players.get(1).message="Waiting on other Players";}
-                   if (SharedObject.players.get(2).response >= SharedObject.currentRound){ SharedObject.players.get(2).message="Waiting on other Players";}
+                    if (SharedObject.players.get(0).response >= SharedObject.currentRound) {
+                        SharedObject.players.get(0).message = "Waiting on other Players";
+                    }
+                    if (SharedObject.players.get(1).response >= SharedObject.currentRound) {
+                        SharedObject.players.get(1).message = "Waiting on other Players";
+                    }
+                    if (SharedObject.players.get(2).response >= SharedObject.currentRound) {
+                        SharedObject.players.get(2).message = "Waiting on other Players";
+                    }
                 }
 
                 SharedObject.currentRound++;
                 while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
-                    String winner =   "Player 1's Card "+ SharedObject.players.get(0).playerCard +" Player 2's Card "+ SharedObject.players.get(1).playerCard +" Player 3's Card "+ SharedObject.players.get(2).playerCard ;
+                   winner= "Everyone Lost";
+                    res =Results(SharedObject.players.get(0).playerCard, SharedObject.players.get(1).playerCard, SharedObject.players.get(2).playerCard, dealerCard);
+                           if( res!=0){
+                               winner= "The Winning Number is "+res;
+                           }
+
                     SharedObject.players.get(0).message = winner;
                     SharedObject.players.get(1).message = winner;
                     SharedObject.players.get(2).message = winner;
 
+                    if (SharedObject.players.get(0).response >= SharedObject.currentRound) {
+                        SharedObject.players.get(0).message = "Waiting on other Players";
+                    }
+                    if (SharedObject.players.get(1).response >= SharedObject.currentRound) {
+                        SharedObject.players.get(1).message = "Waiting on other Players";
+                    }
+                    if (SharedObject.players.get(2).response >= SharedObject.currentRound) {
+                        SharedObject.players.get(2).message = "Waiting on other Players";
+                    }
+
                 }
-             /*   System.out.println("round "+SharedObject.currentRound );
-                int dealerCard = deck.remove(0);
-                System.out.println("Dealer shows card " + dealerCard);
+                if(SharedObject.players.get(0).playerCard==res){SharedObject.playerOnePoints++;}
+                if(SharedObject.players.get(1).playerCard==res){SharedObject.playerTwoPoints++;}
+                if(SharedObject.players.get(2).playerCard==res){SharedObject.playerThreePoints++;}
 
-
-                SharedObject.players.get(0).dealerCard = dealerCard;
-                SharedObject.players.get(1).dealerCard = dealerCard;
-                SharedObject.players.get(2).dealerCard = dealerCard;
-
-                SharedObject.players.get(0).wait=false;
-                SharedObject.players.get(1).wait=false;
-                SharedObject.players.get(2).wait=false;
-            */
+                System.out.println("Player 1 Points "+SharedObject.playerOnePoints);
+                System.out.println("Player 2 Points "+SharedObject.playerTwoPoints);
+                System.out.println("Player 3 Points "+SharedObject.playerThreePoints);
 
 
 
 
-
-
-            /*    SharedObject.players.get(0).clearCard();
-                SharedObject.players.get(1).clearCard();
-                SharedObject.players.get(2).clearCard();
-
-                SharedObject.players.get(0).cardPrompt();
-                SharedObject.players.get(1).cardPrompt();
-                SharedObject.players.get(2).cardPrompt();
-            */
-
-                System.out.println( SharedObject.players.get(0).playerCard);
-                System.out.println( SharedObject.players.get(1).playerCard);
-                System.out.println( SharedObject.players.get(2).playerCard);
-              /*
-                SharedObject.players.get(0).begin();
-                SharedObject.players.get(1).begin();
-                SharedObject.players.get(2).begin();
-
-                SharedObject.currentRound++;
-
-                SharedObject.players.get(0).response = SharedObject.currentRound - 1;
-                SharedObject.players.get(1).response = SharedObject.currentRound - 1;
-                SharedObject.players.get(2).response = SharedObject.currentRound - 1;*/
-
-
-            }
-        }
-
-
-      while (!SharedObject.isGameOver) {
-        System.out.println("Round " + SharedObject.currentRound);
-        int dealerCard = deck.remove(0);
-        System.out.println("Dealer shows card " + dealerCard);
-        SharedObject.playerCards.clear();
-
-
-        synchronized (SharedObject.players) {
-            for (ServerThread player : SharedObject.players) {
-                player.cardPrompt();
-                System.out.println("Deal");
-            }
-        }
-        int highestCard = -1;
-        int highestPlayerId = -1;
-
-        for (int i = 0; i < SharedObject.playerCards.size(); i++) {
-            int card = SharedObject.playerCards.get(i);
-            if (card > highestCard) {
-                highestCard = card;
-                highestPlayerId = i;
             }
         }
         synchronized (SharedObject.players) {
-            for (int i = 0; i < SharedObject.players.size(); i++) {
-                if (i == highestPlayerId) {
-                    SharedObject.players.get(i).addPoint();
-                }
-                SharedObject.players.get(i).clearCard();
-            }
-        }
-        SharedObject.currentRound++;
-        if (SharedObject.currentRound > 13) {
-            SharedObject.isGameOver = true;
-        }
-    }
-    synchronized (SharedObject.players) {
-        for (ServerThread player : SharedObject.players) {
-            player.gameOver();
-        }
-    }
-}
+            System.out.println("Player 1 Points "+SharedObject.playerOnePoints);
+            System.out.println("Player 2 Points "+SharedObject.playerTwoPoints);
+            System.out.println("Player 3 Points "+SharedObject.playerThreePoints);
 
-
-
-
-
-class ServerThread extends Thread{
-
-    private String line=null;
-
-    private String lastResponse="";
-
-    private String message="";
-    private BufferedReader reader = null;
-    private PrintWriter writer =null;
-    private Socket s=null;
-    private int playerId;
-    private int playerCard;
-
-    private int dealerCard =0;
-
-    private int lastDealerCard =0;
-    private int playerPoints;
-    private int response=0;
-    private boolean wait=false;
-
-
-
-    public ServerThread(Socket s, int playerId){
-        this.s=s;
-        this.playerId = playerId;
-        //added playerId
-    }
-
-    //adding these functions to play the game
-    public void addPoint() {
-        playerPoints++;
-    }
-
-    public void clearCard() {
-        playerCard = -1;
-    }
-    public void begin() {
-      //  playerCard=0;
-        wait=false;
-    }
-
-    public void gameOver() {
-        writer.println("Game over!");
-        writer.flush();
-        writer.println("You scored " + playerPoints + " points.");
-        writer.flush();
-    }
-
-
-    public void broadcast (String m)  {
-
-        writer.println(m);
-        writer.flush();
-         //   this.message=m;
-
-    }
-
-
-    public void card ()  {
-
-        try {
-
-            writer.println("Your turn! Enter a number between 1 and 13:");
-            writer.flush();
-            line = reader.readLine();
-            while (line != null)  {
-
-                try {
-                    int card = Integer.parseInt(line);
-                    if (card >= 1 && card <= 13) {
-                        playerCard = card;
-                    } else {
-                        writer.println("Invalid input. Enter a number between 1 and 13:");
-                        writer.flush();
-                    }
-                } catch (NumberFormatException e) {
-                    writer.println("Invalid input. Enter a number between 1 and 13:");
-                    writer.flush();
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
 
     }
 
+    public static int Results(int playerOne, int playerTwo, int playerThree, int dealerCard) {
 
-    //new function that allows the server to ask a client for a card input
-    public void cardPrompt() {
-        try {
-            //writer = new PrintWriter(s.getOutputStream());
-            writer.println("Your turn! Enter a number between 1 and 13:");
-            writer.flush();
-            while (playerCard == -1) {
-                String input = reader.readLine();
-                try {
-                    int card = Integer.parseInt(input);
-                    if (card >= 1 && card <= 13) {
-                        playerCard = card;
-                    } else {
-                        writer.println("Invalid input. Enter a number between 1 and 13:");
-                        writer.flush();
-                    }
-                } catch (NumberFormatException e) {
-                    writer.println("Invalid input. Enter a number between 1 and 13:");
-                    writer.flush();
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+        int high = 0;
+        if (playerOne > high) {
+            high = playerOne;
         }
+        if (playerTwo > high) {
+            high = playerTwo;
+        }
+        if (playerThree > high) {
+            high = playerThree;
+        }
+
+        if (high < dealerCard) {
+            return 0;
+        }
+
+        return high;
     }
 
 
+    class ServerThread extends Thread {
+
+        private String line = null;
+
+        private String message = "";
+        private BufferedReader reader = null;
+        private PrintWriter writer = null;
+        private Socket s = null;
+        private int playerId;
+        private int playerCard;
+        private int response = 0;
+        private ArrayList<Integer> taken = new ArrayList<Integer>();
 
 
-    public void run() {
+        public ServerThread(Socket s, int playerId) {
+            this.s = s;
+            this.playerId = playerId;
 
-        try {
-            reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            writer = new PrintWriter(s.getOutputStream());
+        }
 
-            line = reader.readLine();
-            while (line != null) {
 
-                if (message!="")  {
-                    writer.println(message);
-                    message="";
-                    response++;
-                }
-                else
-                            try {
-                                int card = Integer.parseInt(line);
-                                if (card >= 1 && card <= 13) {
-                                    writer.println("You Choose "+card);
-                                    playerCard = card;
-                                    response++;
-                                } else {
-                                    System.out.println(line);
-                                    writer.println("Invalid input. Enter a number between 1 and 13:");
-                                    //      writer.flush();
-                                }
-                            } catch (NumberFormatException e) {
+        public void run() {
+
+            try {
+                reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                writer = new PrintWriter(s.getOutputStream());
+
+                line = reader.readLine();
+                while (line != null) {
+
+                    if (message != "") {
+                        writer.println(message);
+                        message = "";
+                        response++;
+                    } else
+                        try {
+                            int card = Integer.parseInt(line);
+                            if (taken.contains(card)) {
+                                writer.println("Invalid input. you already used that card:");
+                            } else if (card >= 1 && card <= 13) {
+                                writer.println("You choose " + card);
+                                playerCard = card;
+                                taken.add(card);
+                                response++;
+                            } else {
+                                System.out.println(line);
                                 writer.println("Invalid input. Enter a number between 1 and 13:");
+
+                            }
+                        } catch (NumberFormatException e) {
+                            writer.println("Invalid input. Enter a number between 1 and 13:");
+                        }
+                    writer.flush();
+                    line = reader.readLine();
                 }
-                writer.flush();
-                line = reader.readLine();
+
+            } catch (IOException e) {
+
+                line = this.getName(); //reused String line for getting thread name
+                System.out.println("IO Error/ Client " + line + " terminated abruptly");
+            } catch (NullPointerException e) {
+                line = this.getName(); //reused String line for getting thread name
+                System.out.println("Client " + line + " Closed");
+            } finally {
+                try {
+                    System.out.println("Connection Closing..");
+                    if (reader != null) {
+                        reader.close();
+                        System.out.println(" Socket Input Stream Closed");
+                    }
+
+                    if (writer != null) {
+                        writer.close();
+                        System.out.println("Socket Out Closed");
+                    }
+                    if (s != null) {
+                        s.close();
+                        System.out.println("Socket Closed");
+                    }
+
+                } catch (IOException ie) {
+                    System.out.println("Socket Close Error");
+                }
             }
-
-        } catch (IOException e) {
-
-            line=this.getName(); //reused String line for getting thread name
-            System.out.println("IO Error/ Client "+line+" terminated abruptly");
         }
-        catch(NullPointerException e){
-            line=this.getName(); //reused String line for getting thread name
-            System.out.println("Client "+line+" Closed");
-        }
-
-        finally{
-            try{
-                System.out.println("Connection Closing..");
-                if (reader !=null){
-                    reader.close();
-                    System.out.println(" Socket Input Stream Closed");
-                }
-
-                if(writer !=null){
-                    writer.close();
-                    System.out.println("Socket Out Closed");
-                }
-                if (s!=null){
-                    s.close();
-                    System.out.println("Socket Closed");
-                }
-
-            }
-            catch(IOException ie){
-                System.out.println("Socket Close Error");
-            }
-        }//end finally
     }
-    /*
-    public void run() {
-
-        try {
-            reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            writer = new PrintWriter(s.getOutputStream());
-
-            line = reader.readLine();
-            while (line != null) {
-
-                if (message!="")  {
-                    writer.println(message);
-                    message="";
-                }
-              else if (dealerCard!= lastDealerCard) {
-                       if(response==0){
-                           writer.println("You are player " + playerId+" The Dealer Plays " + dealerCard + " Your turn! Enter a number between 1 and 13:");
-                           response++;
-                       }else {
-                           writer.println("The Dealer Plays " + dealerCard + " Your turn! Enter a number between 1 and 13:" + " Your last card was " + playerCard);
-
-                           lastDealerCard = dealerCard;
-
-                           playerCard = 0;
-
-                           if (line != lastResponse && dealerCard != 0) {
-                               System.out.println(line);
-                               lastResponse = line;
-
-
-                               try {
-                                   int card = Integer.parseInt(line);
-                                   if (card >= 1 && card <= 13) {
-                                       playerCard = card;
-                                       response++;
-                                   } else {
-                                       System.out.println(line);
-                                       writer.println("Invalid input. Enter a number between 1 and 13:");
-                                       //      writer.flush();
-                                   }
-                               } catch (NumberFormatException e) {
-                                   writer.println("Invalid input. Enter a number between 1 and 13:");
-
-                               }
-                           }
-                       }
-                }
-                writer.flush();
-                line = reader.readLine();
-            }
-
-        } catch (IOException e) {
-
-            line=this.getName(); //reused String line for getting thread name
-            System.out.println("IO Error/ Client "+line+" terminated abruptly");
-        }
-        catch(NullPointerException e){
-            line=this.getName(); //reused String line for getting thread name
-            System.out.println("Client "+line+" Closed");
-        }
-
-        finally{
-            try{
-                System.out.println("Connection Closing..");
-                if (reader !=null){
-                    reader.close();
-                    System.out.println(" Socket Input Stream Closed");
-                }
-
-                if(writer !=null){
-                    writer.close();
-                    System.out.println("Socket Out Closed");
-                }
-                if (s!=null){
-                    s.close();
-                    System.out.println("Socket Closed");
-                }
-
-            }
-            catch(IOException ie){
-                System.out.println("Socket Close Error");
-            }
-        }//end finally
-    }*/
-}
 }
 
-
-
-/*
- * Notes for building this
- * we need to implement each client to have a total sum of 91 (1+2+3+..+13)=91
- *          this can be our validation that the cards being used are not reused?
- *          this is kinda my though process but its also a little buggy thinking 
- *          that you can use 13 like 4 times i guess
- *          
- *               The project states that the code doesnt need to validate 
- *   
- * 
- *      need to make a simple score card 
- *      
- *      have the server issue a card first then make the client choose
- * 
- * 
- * 
- * 
- * 
- * 
- */
