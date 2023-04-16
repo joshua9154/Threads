@@ -80,9 +80,9 @@ public class Server_X_Client_test {
             System.out.println("Dealer shows card " + dealerCard);
 
 
-            SharedObject.players.get(0).message = "You are Player 1 and the Dealers card is " + dealerCard;
-            SharedObject.players.get(1).message = "You are Player 2 and the Dealers card is " + dealerCard;
-            SharedObject.players.get(2).message = "You are Player 3 and the Dealers card is " + dealerCard;
+            SharedObject.players.get(0).message = "You are Player 1 and your Suite is Hearts and the Dealers card is " + dealerCard;
+            SharedObject.players.get(1).message = "You are Player 2 and your Suite is Diamonds and the Dealers card is " + dealerCard;
+            SharedObject.players.get(2).message = "You are Player 3 and your Suite is Clubs and the Dealers card is " + dealerCard;
 
             SharedObject.currentRound++;
 
@@ -106,7 +106,35 @@ public class Server_X_Client_test {
                 String winner= "Everyone Lost";
                 int res =Results(SharedObject.players.get(0).playerCard, SharedObject.players.get(1).playerCard, SharedObject.players.get(2).playerCard, dealerCard);
                 if( res!=0){
-                    winner= "The Winning Number is "+res;
+                    String a ="";
+                    String b ="";
+                    String c= "";
+                    Integer d=0;
+                    Integer e=0;
+                    if(SharedObject.players.get(0).playerCard==res){
+                        a= "Client 1 ";
+                        d++;
+                    }
+                    if(SharedObject.players.get(1).playerCard==res){
+                        if (d>0) {
+                            b = "and Client 2" ;
+                        }
+                        else {
+                            b = "Client 2 ";
+                        }
+                        e++;
+                    }
+                    if(SharedObject.players.get(2).playerCard==res){
+
+                        if (d>0||e>0) {
+                            c = " and Client 3" ;
+                        }
+                        else {
+                            c = "Client 3";
+                        }
+
+                    }
+                    winner= "Winner of the round: "+a+b+c+" by "+res;
                 }
                 SharedObject.players.get(0).message = winner;
                 SharedObject.players.get(1).message = winner;
@@ -181,10 +209,35 @@ public class Server_X_Client_test {
                 while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
                    winner= "Everyone Lost";
                     res =Results(SharedObject.players.get(0).playerCard, SharedObject.players.get(1).playerCard, SharedObject.players.get(2).playerCard, dealerCard);
-                           if( res!=0){
-                               winner= "The Winning Number is "+res;
-                           }
+                    if( res!=0) {
+                        String a = "";
+                        String b = "";
+                        String c = "";
+                        Integer d = 0;
+                        Integer e = 0;
+                        if (SharedObject.players.get(0).playerCard == res) {
+                            a = "Client 1 ";
+                            d++;
+                        }
+                        if (SharedObject.players.get(1).playerCard == res) {
+                            if (d > 0) {
+                                b = "and Client 2";
+                            } else {
+                                b = "Client 2 ";
+                            }
+                            e++;
+                        }
+                        if (SharedObject.players.get(2).playerCard == res) {
 
+                            if (d > 0 || e > 0) {
+                                c = " and Client 3";
+                            } else {
+                                c = "Client 3";
+                            }
+
+                        }
+                        winner = "Winner of the round: " + a + b + c + " by " + res;
+                    }
                     SharedObject.players.get(0).message = winner;
                     SharedObject.players.get(1).message = winner;
                     SharedObject.players.get(2).message = winner;
