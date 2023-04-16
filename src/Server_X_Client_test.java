@@ -182,7 +182,7 @@ class ServerThread extends Thread{
 
     private String line=null;
 
-    private String message=null;
+    private String lastResponse="";
     private BufferedReader reader = null;
     private PrintWriter writer =null;
     private Socket s=null;
@@ -190,6 +190,8 @@ class ServerThread extends Thread{
     private int playerCard;
 
     private int dealerCard =0;
+
+    private int lastDealerCard =0;
     private int playerPoints;
     private int response=0;
     private boolean wait=false;
@@ -211,7 +213,7 @@ class ServerThread extends Thread{
         playerCard = -1;
     }
     public void begin() {
-        playerCard=0;
+      //  playerCard=0;
         wait=false;
     }
 
@@ -302,34 +304,47 @@ class ServerThread extends Thread{
             line = reader.readLine();
             while (line != null) {
 
-                   if(response==0){
-                       writer.println("You are player " + playerId);
-                       writer.flush();
-                       response++;
-                   }
-
-                 else if (this.wait)  {
-                       writer.println("We are waiting on other Players");
-                       writer.flush();
+                if (this.wait)  {
+                    writer.println("We are waiting on other Players");
+                   // writer.flush();
                 }
+                   else if(response==0){
+                       writer.println("You are player " + playerId);
+                    //   writer.flush();
+                       response++;
+                   } else if (dealerCard!= lastDealerCard) {
+                       writer.println("The Dealer Plays " + dealerCard);
+                    //   writer.flush();
+                       lastDealerCard=dealerCard;
+
+                   } else if(line!= lastResponse){
+                       writer.println("You are played this card " + line);
+                    //   writer.flush();
+                    lastResponse=line;
+                    response++;
+                }
+
+
                  else{
                        writer.println("Your turn! Enter a number between 1 and 13:");
-                       writer.flush();
+                    //   writer.flush();
                        try {
                            int card = Integer.parseInt(line);
                            if (card >= 1 && card <= 13) {
                                playerCard = card;
                              //  this.wait= true;
                            } else {
+                               System.out.println(line);
                                writer.println("Invalid input. Enter a number between 1 and 13:");
-                               writer.flush();
+                         //      writer.flush();
                            }
                        } catch (NumberFormatException e) {
                            writer.println("Invalid input. Enter a number between 1 and 13:");
-                           writer.flush();
+
                        }
                    }
-
+                 // line= null;
+                writer.flush();
             }
 
         } catch (IOException e) {
