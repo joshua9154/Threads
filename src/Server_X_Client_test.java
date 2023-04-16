@@ -73,34 +73,52 @@ public class Server_X_Client_test {
             }
 
         }
+
+
         while(SharedObject.currentRound<14) {
             synchronized (SharedObject.players) {
                 while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
-
+                   if (SharedObject.players.get(0).response >= SharedObject.currentRound){ SharedObject.players.get(0).wait=true;}
+                   if (SharedObject.players.get(1).response >= SharedObject.currentRound){ SharedObject.players.get(1).wait=true;}
+                   if (SharedObject.players.get(2).response >= SharedObject.currentRound){ SharedObject.players.get(2).wait=true;}
                 }
+
 
                 System.out.println("round "+SharedObject.currentRound );
                 int dealerCard = deck.remove(0);
                 System.out.println("Dealer shows card " + dealerCard);
 
 
-                SharedObject.players.get(0).broadcast("Dealer shows card " + dealerCard);
-                SharedObject.players.get(1).broadcast("Dealer shows card " + dealerCard);
-                SharedObject.players.get(2).broadcast("Dealer shows card " + dealerCard);
+                SharedObject.players.get(0).dealerCard = dealerCard;
+                SharedObject.players.get(1).dealerCard = dealerCard;
+                SharedObject.players.get(2).dealerCard = dealerCard;
 
-                SharedObject.players.get(0).clearCard();
+                SharedObject.players.get(0).wait=false;
+                SharedObject.players.get(1).wait=false;
+                SharedObject.players.get(2).wait=false;
+
+
+
+
+
+
+
+            /*    SharedObject.players.get(0).clearCard();
                 SharedObject.players.get(1).clearCard();
                 SharedObject.players.get(2).clearCard();
 
                 SharedObject.players.get(0).cardPrompt();
                 SharedObject.players.get(1).cardPrompt();
                 SharedObject.players.get(2).cardPrompt();
-
+            */
 
                 System.out.println( SharedObject.players.get(0).playerCard);
                 System.out.println( SharedObject.players.get(1).playerCard);
                 System.out.println( SharedObject.players.get(2).playerCard);
 
+                SharedObject.players.get(0).begin();
+                SharedObject.players.get(1).begin();
+                SharedObject.players.get(2).begin();
 
                 SharedObject.currentRound++;
 
@@ -163,13 +181,20 @@ public class Server_X_Client_test {
 class ServerThread extends Thread{
 
     private String line=null;
+
+    private String lastResponse="";
     private BufferedReader reader = null;
     private PrintWriter writer =null;
     private Socket s=null;
     private int playerId;
     private int playerCard;
+
+    private int dealerCard =0;
+
+    private int lastDealerCard =0;
     private int playerPoints;
     private int response=0;
+    private boolean wait=false;
 
 
 
@@ -187,6 +212,10 @@ class ServerThread extends Thread{
     public void clearCard() {
         playerCard = -1;
     }
+    public void begin() {
+      //  playerCard=0;
+        wait=false;
+    }
 
     public void gameOver() {
         writer.println("Game over!");
@@ -196,10 +225,11 @@ class ServerThread extends Thread{
     }
 
 
-    public void broadcast (String message)  {
+    public void broadcast (String m)  {
 
-            writer.println(message);
-            writer.flush();
+        writer.println(m);
+        writer.flush();
+         //   this.message=m;
 
     }
 
@@ -208,21 +238,27 @@ class ServerThread extends Thread{
 
         try {
 
-            writer.println("Your turn! Play a card between 1 and 13:");
+            writer.println("Your turn! Enter a number between 1 and 13:");
             writer.flush();
             line = reader.readLine();
-            while (line != null) {
-                playerCard = Integer.parseInt(line);
+            while (line != null)  {
+
+                try {
+                    int card = Integer.parseInt(line);
+                    if (card >= 1 && card <= 13) {
+                        playerCard = card;
+                    } else {
+                        writer.println("Invalid input. Enter a number between 1 and 13:");
+                        writer.flush();
+                    }
+                } catch (NumberFormatException e) {
+                    writer.println("Invalid input. Enter a number between 1 and 13:");
+                    writer.flush();
+                }
             }
-
-            writer.println("You played " + playerCard);
-            writer.flush();
-
-        } 
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
 
     }
 
@@ -259,31 +295,56 @@ class ServerThread extends Thread{
 
     
     public void run() {
-        try{
-            reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            writer =new PrintWriter(s.getOutputStream());
-
-            writer.println("You are player " + playerId);
-            writer.flush();
-
-
-
-        }catch(IOException e){
-            System.out.println("IO error in server thread");
-        }
 
         try {
+            reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            writer = new PrintWriter(s.getOutputStream());
 
+         //  wait=false;
             line = reader.readLine();
             while (line != null) {
-                   if(response==0){
-                       response++;
-                   }
 
-                else  {
-                    cardPrompt();
+                if (this.wait)  {
+                    writer.println("We are waiting on other Players");
+                   // writer.flush();
                 }
-                line = reader.readLine();
+                   else if(response==0){
+                       writer.println("You are player " + playerId);
+                    //   writer.flush();
+                       response++;
+                   } else if (dealerCard!= lastDealerCard) {
+                       writer.println("The Dealer Plays " + dealerCard);
+                    //   writer.flush();
+                       lastDealerCard=dealerCard;
+
+                   } else if(line!= lastResponse){
+                       writer.println("You are played this card " + line);
+                    //   writer.flush();
+                    lastResponse=line;
+                    response++;
+                }
+
+
+                 else{
+                       writer.println("Your turn! Enter a number between 1 and 13:");
+                    //   writer.flush();
+                       try {
+                           int card = Integer.parseInt(line);
+                           if (card >= 1 && card <= 13) {
+                               playerCard = card;
+                             //  this.wait= true;
+                           } else {
+                               System.out.println(line);
+                               writer.println("Invalid input. Enter a number between 1 and 13:");
+                         //      writer.flush();
+                           }
+                       } catch (NumberFormatException e) {
+                           writer.println("Invalid input. Enter a number between 1 and 13:");
+
+                       }
+                   }
+                 // line= null;
+                writer.flush();
             }
 
         } catch (IOException e) {
