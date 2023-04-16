@@ -87,7 +87,9 @@ public class Server_X_Client_test {
                 if (SharedObject.players.get(1).response >= 1){ SharedObject.players.get(1).message="Waiting on other Players";}
                 if (SharedObject.players.get(2).response >= 1){ SharedObject.players.get(2).message="Waiting on other Players";}
             }
-
+            SharedObject.players.get(0).message="";
+            SharedObject.players.get(1).message="";
+            SharedObject.players.get(2).message="";
 
         }
         System.out.println("Players Here");
