@@ -99,7 +99,8 @@ public class Server_X_Client_test {
 
 
             while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
-                String winner =   "Player 1's Card "+ SharedObject.players.get(0).playerCard +" Player 2's Card "+ SharedObject.players.get(1).playerCard +" Player 3's Card "+ SharedObject.players.get(2).playerCard ;
+               // String winner =   "Player 1's Card "+ SharedObject.players.get(0).playerCard +" Player 2's Card "+ SharedObject.players.get(1).playerCard +" Player 3's Card "+ SharedObject.players.get(2).playerCard ;
+                String winner =Results(SharedObject.players.get(0).playerCard,SharedObject.players.get(1).playerCard,SharedObject.players.get(2).playerCard,dealerCard);
                 SharedObject.players.get(0).message = winner;
                 SharedObject.players.get(1).message = winner;
                 SharedObject.players.get(2).message = winner;
@@ -132,7 +133,8 @@ public class Server_X_Client_test {
 
                 SharedObject.currentRound++;
                 while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
-                    String winner =   "Player 1's Card "+ SharedObject.players.get(0).playerCard +" Player 2's Card "+ SharedObject.players.get(1).playerCard +" Player 3's Card "+ SharedObject.players.get(2).playerCard ;
+                  //  String winner =   "Player 1's Card "+ SharedObject.players.get(0).playerCard +" Player 2's Card "+ SharedObject.players.get(1).playerCard +" Player 3's Card "+ SharedObject.players.get(2).playerCard ;
+                    String winner =Results(SharedObject.players.get(0).playerCard,SharedObject.players.get(1).playerCard,SharedObject.players.get(2).playerCard,dealerCard);
                     SharedObject.players.get(0).message = winner;
                     SharedObject.players.get(1).message = winner;
                     SharedObject.players.get(2).message = winner;
@@ -226,7 +228,30 @@ public class Server_X_Client_test {
             player.gameOver();
         }
     }
+
+
 }
+    public static String Results(int playerOne, int playerTwo, int playerThree, int dealerCard) {
+
+
+        int high =0;
+        if(playerOne>high){
+            high=playerOne;
+        }
+        if(playerTwo>high){
+            high=playerTwo;
+        }
+        if(playerThree>high){
+            high=playerThree;
+        }
+        if(high<dealerCard){
+            return"Everyone Lost";
+        }
+
+
+
+        return "The Winning Number was "+high;
+    }
 
 
 
