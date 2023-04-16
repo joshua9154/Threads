@@ -74,8 +74,17 @@ public class Server_X_Client_test {
 
         }
         synchronized (SharedObject.players) {
+            System.out.println("round "+SharedObject.currentRound );
+            int dealerCard = deck.remove(0);
+            System.out.println("Dealer shows card " + dealerCard);
+
+
+            SharedObject.players.get(0).dealerCard = dealerCard;
+            SharedObject.players.get(1).dealerCard = dealerCard;
+            SharedObject.players.get(2).dealerCard = dealerCard;
             while (SharedObject.players.get(0).response < 1 || SharedObject.players.get(1).response < 1 || SharedObject.players.get(2).response < 1) {
             }
+
         }
         System.out.println("Players Here");
         while(SharedObject.currentRound<14) {
@@ -309,18 +318,16 @@ class ServerThread extends Thread{
 
                 if (this.wait)  {
                     writer.println("We are waiting on other Players");
-                   // writer.flush();
-                }
-                   else if(response==0){
-                       writer.println("You are player " + playerId);
-                    //   writer.flush();
-                       response++;
 
-                   } else if (dealerCard!= lastDealerCard) {
-                    writer.println("The Dealer Plays " + dealerCard + " Your turn! Enter a number between 1 and 13:");
-                    //   writer.flush();
+                }
+              else if (dealerCard!= lastDealerCard) {
+                       if(response==0){
+                           writer.println("You are player " + playerId+"The Dealer Plays " + dealerCard + " Your turn! Enter a number between 1 and 13:");
+                       }
+                    writer.println("The Dealer Plays " + dealerCard + " Your turn! Enter a number between 1 and 13:"+ " Your last card was "+playerCard);
+
                     lastDealerCard = dealerCard;
-                    //     line="";
+
                     playerCard = 0;
 
                     if (line != lastResponse && dealerCard != 0) {
@@ -332,7 +339,7 @@ class ServerThread extends Thread{
                             int card = Integer.parseInt(line);
                             if (card >= 1 && card <= 13) {
                                 playerCard = card;
-                                writer.println("You are played this card " + playerCard);
+                              //  writer.println("You are played this card " + playerCard);
                                 //    this.wait= true;
                             } else {
                                 System.out.println(line);
