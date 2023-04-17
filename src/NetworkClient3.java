@@ -37,7 +37,7 @@ public class NetworkClient3 {
         try{
              line=br.readLine();              //again just block commenting so we can reuse if necessary
             while(line.compareTo("QUIT")!=0){
-               // line = "Client 1 "+line;
+
 
                 os.println(line);
                 os.flush();

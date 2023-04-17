@@ -15,10 +15,6 @@ public class Server_X_Client_test {
     class SharedObject {
 
         public static List<ServerThread> players = Collections.synchronizedList(new ArrayList<ServerThread>());
-        //   public static List<Integer> playerCards = Collections.synchronizedList(new ArrayList<Integer>());
-
-        //   public static List<Integer> responses = Collections.synchronizedList(new ArrayList<Integer>());
-
         public static int playerOnePoints = 0;
         public static int playerTwoPoints = 0;
         public static int playerThreePoints = 0;
@@ -75,14 +71,14 @@ public class Server_X_Client_test {
         }
         synchronized (SharedObject.players) {
 
-            System.out.println("round 1");
+            System.out.println("Round 0");
             int dealerCard = deck.remove(0);
             System.out.println("Dealer shows card " + dealerCard);
 
 
-            SharedObject.players.get(0).message = "You are Player 1 and the Dealers card is " + dealerCard;
-            SharedObject.players.get(1).message = "You are Player 2 and the Dealers card is " + dealerCard;
-            SharedObject.players.get(2).message = "You are Player 3 and the Dealers card is " + dealerCard;
+            SharedObject.players.get(0).message = "You are Player 1 and your Suite is Hearts and the Dealers card is " + dealerCard+ " of Spades";
+            SharedObject.players.get(1).message = "You are Player 2 and your Suite is Diamonds and the Dealers card is " + dealerCard+ " of Spades";
+            SharedObject.players.get(2).message = "You are Player 3 and your Suite is Clubs and the Dealers card is " + dealerCard+ " of Spades";
 
             SharedObject.currentRound++;
 
@@ -106,7 +102,35 @@ public class Server_X_Client_test {
                 String winner= "Everyone Lost";
                 int res =Results(SharedObject.players.get(0).playerCard, SharedObject.players.get(1).playerCard, SharedObject.players.get(2).playerCard, dealerCard);
                 if( res!=0){
-                    winner= "The Winning Number is "+res;
+                    String a ="";
+                    String b ="";
+                    String c= "";
+                    Integer d=0;
+                    Integer e=0;
+                    if(SharedObject.players.get(0).playerCard==res){
+                        a= "Client 1 ";
+                        d++;
+                    }
+                    if(SharedObject.players.get(1).playerCard==res){
+                        if (d>0) {
+                            b = "and Client 2" ;
+                        }
+                        else {
+                            b = "Client 2 ";
+                        }
+                        e++;
+                    }
+                    if(SharedObject.players.get(2).playerCard==res){
+
+                        if (d>0||e>0) {
+                            c = " and Client 3" ;
+                        }
+                        else {
+                            c = "Client 3";
+                        }
+
+                    }
+                    winner= "Winner of the round: "+a+b+c+" by "+res;
                 }
                 SharedObject.players.get(0).message = winner;
                 SharedObject.players.get(1).message = winner;
@@ -125,27 +149,21 @@ public class Server_X_Client_test {
             }
 
         }
-        System.out.println("Players Here");
+
 
 
         while (SharedObject.Round < 14) {
-            System.out.println("System round 0 " + SharedObject.currentRound);
-            System.out.println(SharedObject.players.get(0).response);
-            System.out.println(SharedObject.players.get(1).response);
-            System.out.println(SharedObject.players.get(2).response);
+
             synchronized (SharedObject.players) {
                 String winner;
                 int res=0;
 
                 System.out.println("round " + SharedObject.currentRound);
                 int dealerCard = deck.remove(0);
-                System.out.println("Dealer shows card " + dealerCard);
+                System.out.println("Dealer shows card " + dealerCard + " of Spades");
 
                 SharedObject.currentRound++;
-                System.out.println("System round 1 " + SharedObject.currentRound);
-                System.out.println(SharedObject.players.get(0).response);
-                System.out.println(SharedObject.players.get(1).response);
-                System.out.println(SharedObject.players.get(2).response);
+
                 SharedObject.players.get(0).response=SharedObject.currentRound-1;
                 SharedObject.players.get(1).response=SharedObject.currentRound-1;
                 SharedObject.players.get(2).response=SharedObject.currentRound-1;
@@ -155,10 +173,7 @@ public class Server_X_Client_test {
                 SharedObject.players.get(2).message = "The Dealers card is " + dealerCard;
 
                 SharedObject.currentRound++;
-                System.out.println("System round 2 " + SharedObject.currentRound);
-                System.out.println(SharedObject.players.get(0).response);
-                System.out.println(SharedObject.players.get(1).response);
-                System.out.println(SharedObject.players.get(2).response);
+
                 while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
 
                     if (SharedObject.players.get(0).response >= SharedObject.currentRound) {
@@ -173,18 +188,39 @@ public class Server_X_Client_test {
                 }
 
                 SharedObject.currentRound++;
-                System.out.println("System round " + SharedObject.currentRound);
 
-                System.out.println(SharedObject.players.get(0).response);
-                System.out.println(SharedObject.players.get(1).response);
-                System.out.println(SharedObject.players.get(2).response);
                 while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
                    winner= "Everyone Lost";
                     res =Results(SharedObject.players.get(0).playerCard, SharedObject.players.get(1).playerCard, SharedObject.players.get(2).playerCard, dealerCard);
-                           if( res!=0){
-                               winner= "The Winning Number is "+res;
-                           }
+                    if( res!=0) {
+                        String a = "";
+                        String b = "";
+                        String c = "";
+                        Integer d = 0;
+                        Integer e = 0;
+                        if (SharedObject.players.get(0).playerCard == res) {
+                            a = "Client 1 ";
+                            d++;
+                        }
+                        if (SharedObject.players.get(1).playerCard == res) {
+                            if (d > 0) {
+                                b = "and Client 2";
+                            } else {
+                                b = "Client 2 ";
+                            }
+                            e++;
+                        }
+                        if (SharedObject.players.get(2).playerCard == res) {
 
+                            if (d > 0 || e > 0) {
+                                c = " and Client 3";
+                            } else {
+                                c = "Client 3";
+                            }
+
+                        }
+                        winner = "Winner of the round: " + a + b + c + " by " + res;
+                    }
                     SharedObject.players.get(0).message = winner;
                     SharedObject.players.get(1).message = winner;
                     SharedObject.players.get(2).message = winner;
@@ -203,13 +239,6 @@ public class Server_X_Client_test {
                 if(SharedObject.players.get(0).playerCard==res){SharedObject.playerOnePoints++;}
                 if(SharedObject.players.get(1).playerCard==res){SharedObject.playerTwoPoints++;}
                 if(SharedObject.players.get(2).playerCard==res){SharedObject.playerThreePoints++;}
-
-                System.out.println("Player 1 Points "+SharedObject.playerOnePoints);
-                System.out.println("Player 2 Points "+SharedObject.playerTwoPoints);
-                System.out.println("Player 3 Points "+SharedObject.playerThreePoints);
-
-
-
 
             }
             SharedObject.Round++;
@@ -257,6 +286,8 @@ public class Server_X_Client_test {
         private PrintWriter writer = null;
         private Socket s = null;
         private int playerId;
+
+        private String suite;
         private int playerCard;
         private int response = 0;
         private ArrayList<Integer> taken = new ArrayList<Integer>();
@@ -266,6 +297,15 @@ public class Server_X_Client_test {
             this.s = s;
             this.playerId = playerId;
 
+            if(playerId==1){
+                suite="Hearts";
+            }
+            else if(playerId==2){
+                suite="Diamonds";
+            }
+            else {
+                suite= "Clubs";
+            }
         }
 
 
@@ -293,7 +333,7 @@ public class Server_X_Client_test {
                             if (taken.contains(card)) {
                                 writer.println("Invalid input. you already used that card:");
                             } else if (card >= 1 && card <= 13) {
-                                writer.println("You choose " + card);
+                                writer.println("You choose " + card+ " of "+suite);
                                 playerCard = card;
                                 taken.add(card);
                                 response++;
