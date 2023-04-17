@@ -71,9 +71,9 @@ public class Server_X_Client_test {
         }
         synchronized (SharedObject.players) {
 
-            System.out.println("Round 0");
+            System.out.println("Round 1");
             int dealerCard = deck.remove(0);
-            System.out.println("Dealer shows card " + dealerCard);
+            System.out.println("Dealer shows card " + dealerCard+ " of Spades");
 
 
             SharedObject.players.get(0).message = "You are Player 1 and your Suite is Hearts and the Dealers card is " + dealerCard+ " of Spades";
@@ -152,13 +152,13 @@ public class Server_X_Client_test {
 
 
 
-        while (SharedObject.Round < 14) {
+        while (SharedObject.Round < 13) {
 
             synchronized (SharedObject.players) {
                 String winner;
                 int res=0;
 
-                System.out.println("round " + SharedObject.currentRound);
+                System.out.println("Round " + (SharedObject.Round+1));
                 int dealerCard = deck.remove(0);
                 System.out.println("Dealer shows card " + dealerCard + " of Spades");
 
@@ -244,12 +244,56 @@ public class Server_X_Client_test {
             SharedObject.Round++;
         }
         synchronized (SharedObject.players) {
+
+            int high=0;
+            if(SharedObject.playerOnePoints>high){
+                high=SharedObject.playerOnePoints;
+            }
+            if(SharedObject.playerTwoPoints>high){
+                high=SharedObject.playerTwoPoints;
+            }
+            if(SharedObject.playerThreePoints>high){
+                high=SharedObject.playerThreePoints;
+            }
+
+            String winners;
+            String a = "";
+            String b = "";
+            String c = "";
+            Integer d = 0;
+            Integer e = 0;
+            if (SharedObject.playerOnePoints == high) {
+                a = "Client 1 ";
+                d++;
+            }
+            if (SharedObject.playerTwoPoints == high) {
+                if (d > 0) {
+                    b = "and Client 2";
+                } else {
+                    b = "Client 2 ";
+                }
+                e++;
+            }
+            if (SharedObject.playerThreePoints == high) {
+
+                if (d > 0 || e > 0) {
+                    c = " and Client 3";
+                } else {
+                    c = "Client 3";
+                }
+
+            }
+            winners = "Winner of the Game is: " + a + b + c + " with " + high+" Points!";
             System.out.println("Player 1 Points "+SharedObject.playerOnePoints);
             System.out.println("Player 2 Points "+SharedObject.playerTwoPoints);
             System.out.println("Player 3 Points "+SharedObject.playerThreePoints);
-            SharedObject.players.get(0).message = "Player 1 Points "+SharedObject.playerOnePoints;
-            SharedObject.players.get(1).message = "Player 2 Points "+SharedObject.playerTwoPoints;
-            SharedObject.players.get(2).message = "Player 3 Points "+SharedObject.playerThreePoints;
+            System.out.println(winners);
+
+            SharedObject.players.get(0).message = "Player 1 Points: "+SharedObject.playerOnePoints+ " Player 2 Points: "+SharedObject.playerTwoPoints+" Player 3 Points: "+SharedObject.playerThreePoints +" "+winners;
+            SharedObject.players.get(1).message = "Player 1 Points: "+SharedObject.playerOnePoints+ " Player 2 Points: "+SharedObject.playerTwoPoints+" Player 3 Points: "+SharedObject.playerThreePoints +" "+winners;
+            SharedObject.players.get(2).message = "Player 1 Points: "+SharedObject.playerOnePoints+ " Player 2 Points: "+SharedObject.playerTwoPoints+" Player 3 Points: "+SharedObject.playerThreePoints +" "+winners;
+
+
 
         }
 
@@ -338,7 +382,7 @@ public class Server_X_Client_test {
                                 taken.add(card);
                                 response++;
                             } else {
-                                System.out.println(line);
+
                                 writer.println("Invalid input. Enter a number between 1 and 13:");
 
                             }
