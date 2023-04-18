@@ -74,6 +74,7 @@ public class Server_X_Client_test {
             System.out.println("Round 1");
             int dealerCard = deck.remove(0);
             System.out.println("Dealer shows card " + dealerCard+ " of Spades");
+            int res=0;
 
 
             SharedObject.players.get(0).message = "You are Player 1 and your Suite is Hearts and the Dealers card is " + dealerCard+ " of Spades";
@@ -97,10 +98,14 @@ public class Server_X_Client_test {
 
             SharedObject.currentRound++;
 
+            SharedObject.players.get(0).response=SharedObject.currentRound-1;
+            SharedObject.players.get(1).response=SharedObject.currentRound-1;
+            SharedObject.players.get(2).response=SharedObject.currentRound-1;
+
 
             while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
                 String winner= "Everyone Lost";
-                int res =Results(SharedObject.players.get(0).playerCard, SharedObject.players.get(1).playerCard, SharedObject.players.get(2).playerCard, dealerCard);
+                 res =Results(SharedObject.players.get(0).playerCard, SharedObject.players.get(1).playerCard, SharedObject.players.get(2).playerCard, dealerCard);
                 if( res!=0){
                     String a ="";
                     String b ="";
@@ -132,21 +137,30 @@ public class Server_X_Client_test {
                     }
                     winner= "Winner of the round: "+a+b+c+" by "+res;
                 }
-                SharedObject.players.get(0).message = winner;
-                SharedObject.players.get(1).message = winner;
-                SharedObject.players.get(2).message = winner;
-
                 if (SharedObject.players.get(0).response >= SharedObject.currentRound) {
                     SharedObject.players.get(0).message = "Waiting on other Players";
+                }else{
+                    SharedObject.players.get(0).message = winner;
                 }
                 if (SharedObject.players.get(1).response >= SharedObject.currentRound) {
                     SharedObject.players.get(1).message = "Waiting on other Players";
                 }
+                else{
+                    SharedObject.players.get(1).message = winner;
+                }
                 if (SharedObject.players.get(2).response >= SharedObject.currentRound) {
                     SharedObject.players.get(2).message = "Waiting on other Players";
                 }
+                else{
+                    SharedObject.players.get(2).message = winner;
+                }
 
             }
+            if(SharedObject.players.get(0).playerCard==res){SharedObject.playerOnePoints+=dealerCard;}
+            if(SharedObject.players.get(1).playerCard==res){SharedObject.playerTwoPoints+=dealerCard;}
+            if(SharedObject.players.get(2).playerCard==res){SharedObject.playerThreePoints+=dealerCard;}
+
+
 
         }
 
@@ -187,7 +201,13 @@ public class Server_X_Client_test {
                     }
                 }
 
+
+
                 SharedObject.currentRound++;
+
+                SharedObject.players.get(0).response=SharedObject.currentRound-1;
+                SharedObject.players.get(1).response=SharedObject.currentRound-1;
+                SharedObject.players.get(2).response=SharedObject.currentRound-1;
 
                 while (SharedObject.players.get(0).response < SharedObject.currentRound || SharedObject.players.get(1).response < SharedObject.currentRound || SharedObject.players.get(2).response < SharedObject.currentRound) {
                    winner= "Everyone Lost";
@@ -221,24 +241,31 @@ public class Server_X_Client_test {
                         }
                         winner = "Winner of the round: " + a + b + c + " by " + res;
                     }
-                    SharedObject.players.get(0).message = winner;
-                    SharedObject.players.get(1).message = winner;
-                    SharedObject.players.get(2).message = winner;
+
 
                     if (SharedObject.players.get(0).response >= SharedObject.currentRound) {
                         SharedObject.players.get(0).message = "Waiting on other Players";
+                    }else{
+                        SharedObject.players.get(0).message = winner;
                     }
                     if (SharedObject.players.get(1).response >= SharedObject.currentRound) {
                         SharedObject.players.get(1).message = "Waiting on other Players";
                     }
+                    else{
+                        SharedObject.players.get(1).message = winner;
+                    }
                     if (SharedObject.players.get(2).response >= SharedObject.currentRound) {
                         SharedObject.players.get(2).message = "Waiting on other Players";
                     }
+                    else{
+                        SharedObject.players.get(2).message = winner;
+                    }
 
                 }
-                if(SharedObject.players.get(0).playerCard==res){SharedObject.playerOnePoints++;}
-                if(SharedObject.players.get(1).playerCard==res){SharedObject.playerTwoPoints++;}
-                if(SharedObject.players.get(2).playerCard==res){SharedObject.playerThreePoints++;}
+                if(SharedObject.players.get(0).playerCard==res){SharedObject.playerOnePoints+=dealerCard;}
+                if(SharedObject.players.get(1).playerCard==res){SharedObject.playerTwoPoints+=dealerCard;}
+                if(SharedObject.players.get(2).playerCard==res){SharedObject.playerThreePoints+=dealerCard;}
+
 
             }
             SharedObject.Round++;
