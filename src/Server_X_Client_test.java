@@ -182,9 +182,9 @@ public class Server_X_Client_test {
                 SharedObject.players.get(1).response=SharedObject.currentRound-1;
                 SharedObject.players.get(2).response=SharedObject.currentRound-1;
 
-                SharedObject.players.get(0).message = "The Dealers card is " + dealerCard;
-                SharedObject.players.get(1).message = "The Dealers card is " + dealerCard;
-                SharedObject.players.get(2).message = "The Dealers card is " + dealerCard;
+                SharedObject.players.get(0).message = "The Dealers card is " + dealerCard+ " of Spades";
+                SharedObject.players.get(1).message = "The Dealers card is " + dealerCard+ " of Spades";
+                SharedObject.players.get(2).message = "The Dealers card is " + dealerCard+ " of Spades";
 
                 SharedObject.currentRound++;
 
