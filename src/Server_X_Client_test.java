@@ -159,6 +159,8 @@ public class Server_X_Client_test {
             if(SharedObject.players.get(0).playerCard==res){SharedObject.playerOnePoints+=dealerCard;}
             if(SharedObject.players.get(1).playerCard==res){SharedObject.playerTwoPoints+=dealerCard;}
             if(SharedObject.players.get(2).playerCard==res){SharedObject.playerThreePoints+=dealerCard;}
+            System.out.println("Player 1 Points: "+SharedObject.playerOnePoints+ ", Player 2 Points: "+SharedObject.playerTwoPoints+", Player 3 Points: "+SharedObject.playerThreePoints );
+
 
 
 
@@ -265,6 +267,7 @@ public class Server_X_Client_test {
                 if(SharedObject.players.get(0).playerCard==res){SharedObject.playerOnePoints+=dealerCard;}
                 if(SharedObject.players.get(1).playerCard==res){SharedObject.playerTwoPoints+=dealerCard;}
                 if(SharedObject.players.get(2).playerCard==res){SharedObject.playerThreePoints+=dealerCard;}
+                System.out.println("Player 1 Points: "+SharedObject.playerOnePoints+ ", Player 2 Points: "+SharedObject.playerTwoPoints+", Player 3 Points: "+SharedObject.playerThreePoints );
 
 
             }
@@ -311,14 +314,14 @@ public class Server_X_Client_test {
 
             }
             winners = "Winner of the Game is: " + a + b + c + " with " + high+" Points!";
-            System.out.println("Player 1 Points "+SharedObject.playerOnePoints);
-            System.out.println("Player 2 Points "+SharedObject.playerTwoPoints);
-            System.out.println("Player 3 Points "+SharedObject.playerThreePoints);
+            System.out.println("Player 1 Points: "+SharedObject.playerOnePoints);
+            System.out.println("Player 2 Points: "+SharedObject.playerTwoPoints);
+            System.out.println("Player 3 Points: "+SharedObject.playerThreePoints);
             System.out.println(winners);
 
-            SharedObject.players.get(0).message = "Player 1 Points: "+SharedObject.playerOnePoints+ " Player 2 Points: "+SharedObject.playerTwoPoints+" Player 3 Points: "+SharedObject.playerThreePoints +" "+winners;
-            SharedObject.players.get(1).message = "Player 1 Points: "+SharedObject.playerOnePoints+ " Player 2 Points: "+SharedObject.playerTwoPoints+" Player 3 Points: "+SharedObject.playerThreePoints +" "+winners;
-            SharedObject.players.get(2).message = "Player 1 Points: "+SharedObject.playerOnePoints+ " Player 2 Points: "+SharedObject.playerTwoPoints+" Player 3 Points: "+SharedObject.playerThreePoints +" "+winners;
+            SharedObject.players.get(0).message = "Player 1 Points: "+SharedObject.playerOnePoints+ ", Player 2 Points: "+SharedObject.playerTwoPoints+", Player 3 Points: "+SharedObject.playerThreePoints +" "+winners;
+            SharedObject.players.get(1).message = "Player 1 Points: "+SharedObject.playerOnePoints+ ", Player 2 Points: "+SharedObject.playerTwoPoints+", Player 3 Points: "+SharedObject.playerThreePoints +" "+winners;
+            SharedObject.players.get(2).message = "Player 1 Points: "+SharedObject.playerOnePoints+ ", Player 2 Points: "+SharedObject.playerTwoPoints+", Player 3 Points: "+SharedObject.playerThreePoints +" "+winners;
 
 
 
