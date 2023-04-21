@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
-public class NetworkClient {
+public class Client1 {
 
     public static void main(String args[]) throws IOException{
 
@@ -20,7 +20,7 @@ public class NetworkClient {
         PrintWriter os=null;
 
         try {
-            s1=new Socket(address, 4445); // You can use static final constant PORT_NUM
+            s1=new Socket(address, 4445);
             br= new BufferedReader(new InputStreamReader(System.in));
             is=new BufferedReader(new InputStreamReader(s1.getInputStream()));
             os= new PrintWriter(s1.getOutputStream());
@@ -35,7 +35,7 @@ public class NetworkClient {
 
         String response=null;
         try{
-             line=br.readLine();              //again just block commenting so we can reuse if necessary
+             line=br.readLine();
             while(line.compareTo("QUIT")!=0){
 
 

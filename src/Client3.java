@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
-public class NetworkClient3 {
+public class Client3 {
 
     public static void main(String args[]) throws IOException{
 
@@ -35,7 +35,7 @@ public class NetworkClient3 {
 
         String response=null;
         try{
-             line=br.readLine();              //again just block commenting so we can reuse if necessary
+             line=br.readLine();
             while(line.compareTo("QUIT")!=0){
 
 

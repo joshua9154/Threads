@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class Server_X_Client_test {
+public class Server {
 
     class SharedObject {
 
@@ -22,7 +22,6 @@ public class Server_X_Client_test {
 
         public static int Round = 1;
 
-        //     public static boolean isGameOver = false;
     }
 
     public static void main(String args[]) {
@@ -40,7 +39,7 @@ public class Server_X_Client_test {
         Collections.shuffle(deck);
 
         try {
-            ss2 = new ServerSocket(4445); // can also use static final PORT_NUM , when defined
+            ss2 = new ServerSocket(4445);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -49,7 +48,7 @@ public class Server_X_Client_test {
         }
 
 
-        Server_X_Client_test server = new Server_X_Client_test();
+        Server server = new Server();
         while (counter < 3) {
 
 
@@ -159,7 +158,7 @@ public class Server_X_Client_test {
             if(SharedObject.players.get(0).playerCard==res){SharedObject.playerOnePoints+=dealerCard;}
             if(SharedObject.players.get(1).playerCard==res){SharedObject.playerTwoPoints+=dealerCard;}
             if(SharedObject.players.get(2).playerCard==res){SharedObject.playerThreePoints+=dealerCard;}
-            System.out.println("Player 1 Points: "+SharedObject.playerOnePoints+ ", Player 2 Points: "+SharedObject.playerTwoPoints+", Player 3 Points: "+SharedObject.playerThreePoints );
+            System.out.println("Score for Round 1: Player 1 Points: "+SharedObject.playerOnePoints+ ", Player 2 Points: "+SharedObject.playerTwoPoints+", Player 3 Points: "+SharedObject.playerThreePoints );
 
 
 
@@ -267,7 +266,7 @@ public class Server_X_Client_test {
                 if(SharedObject.players.get(0).playerCard==res){SharedObject.playerOnePoints+=dealerCard;}
                 if(SharedObject.players.get(1).playerCard==res){SharedObject.playerTwoPoints+=dealerCard;}
                 if(SharedObject.players.get(2).playerCard==res){SharedObject.playerThreePoints+=dealerCard;}
-                System.out.println("Player 1 Points: "+SharedObject.playerOnePoints+ ", Player 2 Points: "+SharedObject.playerTwoPoints+", Player 3 Points: "+SharedObject.playerThreePoints );
+                System.out.println("Score for Round "+(SharedObject.Round+1)+": Player 1 Points: "+SharedObject.playerOnePoints+ ", Player 2 Points: "+SharedObject.playerTwoPoints+", Player 3 Points: "+SharedObject.playerThreePoints );
 
 
             }
@@ -425,10 +424,10 @@ public class Server_X_Client_test {
 
             } catch (IOException e) {
 
-                line = this.getName(); //reused String line for getting thread name
+                line = this.getName();
                 System.out.println("IO Error/ Client " + line + " terminated abruptly");
             } catch (NullPointerException e) {
-                line = this.getName(); //reused String line for getting thread name
+                line = this.getName();
                 System.out.println("Client " + line + " Closed");
             } finally {
                 try {
